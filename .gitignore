@@ -1,0 +1,41 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.local
+
+# Next.js build & dev cache
+.next/
+.next-dev/
+**/.next/
+**/.next-dev/
+out/
+build/
+dist/
+
+# External Stitch Design Workspace & Archives
+stitch_notesofani_design_system/
+*.zip
+
+# Uploads & local storage
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS / Editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

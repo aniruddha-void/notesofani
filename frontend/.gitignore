@@ -1,0 +1,15 @@
+# Next.js build & dev cache
+.next/
+.next-dev/
+out/
+build/
+dist/
+
+# Node modules
+node_modules/
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

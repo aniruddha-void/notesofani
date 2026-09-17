@@ -1,0 +1,9 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": ["uploads/*", "node_modules/*", "*.test.js", "seeders/*"],
+  "delay": 500,
+  "events": {
+    "restart": "powershell -Command \"$p = (Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue).OwningProcess; if ($p) { Stop-Process -Id $p -Force -ErrorAction SilentlyContinue }\""
+  }
+}
