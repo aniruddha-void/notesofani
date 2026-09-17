@@ -113,10 +113,10 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 flex text-slate-200">
+    <div className="min-h-screen bg-obsidian-950 flex flex-col md:flex-row text-slate-200">
       <AdminSidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
       
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.06]">

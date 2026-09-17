@@ -56,10 +56,10 @@ export default function HomePage() {
 
       <main className="w-full pt-20">
         
-        <section className="w-full pt-28 pb-20 px-6 sm:px-8 text-center relative">
+        <section className="w-full pt-20 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 text-center relative">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.08] text-balance">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08] text-balance">
               Notes. Resources.<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 via-sky-200 to-sky-400">
                 Everything in one place.
@@ -67,22 +67,22 @@ export default function HomePage() {
             </h1>
 
             
-            <p className="mt-6 sm:mt-7 text-base sm:text-lg md:text-xl text-slate-400 font-light max-w-2xl text-balance leading-relaxed">
+            <p className="mt-5 sm:mt-7 text-sm sm:text-lg md:text-xl text-slate-400 font-light max-w-2xl text-balance leading-relaxed">
               Discover notes, PDFs and useful resources — simple, organized and always within reach.
             </p>
 
             
-            <div className="w-full max-w-2xl mt-10 relative group">
+            <div className="w-full max-w-2xl mt-8 sm:mt-10 relative group px-2 sm:px-0">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500/30 to-blue-600/20 rounded-2xl blur-lg opacity-40 group-hover:opacity-75 group-focus-within:opacity-100 group-focus-within:from-sky-500/50 group-focus-within:to-blue-500/30 transition duration-500"></div>
               <form
                 onSubmit={handleSearchSubmit}
-                className="relative flex items-center bg-obsidian-800 border border-white/10 group-hover:border-white/20 group-focus-within:border-sky-500/50 rounded-2xl px-5 py-3.5 sm:py-4 shadow-2xl transition-all"
+                className="relative flex items-center bg-obsidian-800 border border-white/10 group-hover:border-white/20 group-focus-within:border-sky-500/50 rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-2xl transition-all"
               >
-                <span className="material-symbols-outlined text-slate-400 group-focus-within:text-sky-400 text-[22px] mr-3.5 transition-colors">
+                <span className="material-symbols-outlined text-slate-400 group-focus-within:text-sky-400 text-[20px] sm:text-[22px] mr-2.5 sm:mr-3.5 transition-colors">
                   search
                 </span>
                 <input
-                  className="w-full bg-transparent text-white placeholder:text-slate-500 text-sm sm:text-base font-normal focus:outline-none"
+                  className="w-full bg-transparent text-white placeholder:text-slate-500 text-xs sm:text-base font-normal focus:outline-none"
                   id="librarySearch"
                   placeholder="Search notes, PDFs, resources…"
                   type="text"
@@ -93,12 +93,12 @@ export default function HomePage() {
             </div>
 
             
-            <div className="mt-12 flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 max-w-2xl">
+            <div className="mt-8 sm:mt-12 flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 max-w-2xl">
               {OFFICIAL_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all border shrink-0 ${
+                  className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all border shrink-0 ${
                     selectedCategory === cat
                       ? 'bg-sky-500/15 text-sky-400 border-sky-500/30'
                       : 'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border-white/5 hover:border-white/15'
@@ -112,7 +112,7 @@ export default function HomePage() {
         </section>
 
        
-        <section className="max-w-7xl mx-auto px-6 sm:px-8 py-16" id="resources">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16" id="resources">
           <div className="flex items-baseline justify-between border-b border-white/[0.06] pb-6 mb-12">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Explore Resources</h2>

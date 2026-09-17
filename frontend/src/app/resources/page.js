@@ -140,7 +140,7 @@ export default function ResourcesPage() {
     <div className="min-h-screen flex flex-col justify-between">
       <Header />
 
-      <main className="w-full pt-28 pb-16 px-6 sm:px-8 max-w-7xl mx-auto">
+      <main className="w-full pt-20 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">

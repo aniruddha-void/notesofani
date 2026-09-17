@@ -24,7 +24,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
       aria-labelledby={title ? 'modal-title' : undefined}
     >
       <div
-        className="relative w-full max-w-md bg-obsidian-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6 text-slate-200"
+        className="relative w-full max-w-md max-h-[85vh] sm:max-h-[90vh] overflow-y-auto bg-obsidian-900 border border-white/10 rounded-2xl shadow-2xl p-4 sm:p-6 text-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
         

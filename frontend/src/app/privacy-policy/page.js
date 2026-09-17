@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
       <Header />
 
       <main className="w-full flex-1 pt-16 bg-background">
-        <div className="max-w-5xl mx-auto px-gutter py-space-xl">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-space-xl">
           <div className="flex flex-col w-full">
             <div className="relative max-w-3xl mx-auto w-full px-space-md sm:px-gutter py-space-xl">
               <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>

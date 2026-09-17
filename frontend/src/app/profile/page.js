@@ -71,21 +71,21 @@ export default function ProfilePage() {
     <div className="min-h-screen flex flex-col justify-between">
       <Header />
 
-      <main className="w-full pt-28 pb-16 px-6 sm:px-8 max-w-4xl mx-auto">
-        <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl">
+      <main className="w-full pt-20 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-4 sm:p-8 shadow-2xl overflow-hidden">
           
-          <div className="flex items-center gap-6 pb-8 border-b border-white/[0.06] mb-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 pb-6 sm:pb-8 border-b border-white/[0.06] mb-8">
             <UserAvatar
               src={user.avatarUrl}
               name={user.name}
-              className="w-20 h-20 text-2xl border-2 border-sky-500/30"
+              className="w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl border-2 border-sky-500/30 shrink-0"
             />
-            <div>
+            <div className="min-w-0 w-full">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-1">
                 Google Authenticated
               </div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">{user.name}</h1>
-              <p className="text-slate-400 text-sm">{user.email}</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">{user.name}</h1>
+              <p className="text-slate-400 text-xs sm:text-sm truncate">{user.email}</p>
             </div>
           </div>
 

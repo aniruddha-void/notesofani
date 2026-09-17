@@ -109,10 +109,10 @@ export default function AddResourcePage() {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 flex text-slate-200">
+    <div className="min-h-screen bg-obsidian-950 flex flex-col md:flex-row text-slate-200">
       <AdminSidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-4 sm:p-8 overflow-y-auto w-full">
         <Toast
           visible={toast.visible}
           message={toast.message}
@@ -126,10 +126,10 @@ export default function AddResourcePage() {
               <span className="material-symbols-outlined text-[16px]">arrow_back</span>
               Back to Resources
             </Link>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Add New Resource</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Add New Resource</h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-obsidian-900 border border-white/[0.06] rounded-2xl p-8 shadow-2xl space-y-6">
+          <form onSubmit={handleSubmit} className="bg-obsidian-900 border border-white/[0.06] rounded-2xl p-4 sm:p-8 shadow-2xl space-y-6">
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 Resource Title

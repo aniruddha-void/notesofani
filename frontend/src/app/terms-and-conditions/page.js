@@ -11,7 +11,7 @@ export default function TermsPage() {
       <Header />
 
       <main className="w-full flex-1 pt-16 bg-background">
-        <div className="max-w-5xl mx-auto px-gutter py-space-xl">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-space-xl">
           <div className="flex flex-col w-full">
             <section className="max-w-3xl mx-auto w-full py-space-xl flex flex-col gap-space-lg">
               

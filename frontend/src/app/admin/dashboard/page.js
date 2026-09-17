@@ -60,22 +60,22 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 flex text-slate-200">
+    <div className="min-h-screen bg-obsidian-950 flex flex-col md:flex-row text-slate-200">
       <AdminSidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-4 sm:p-8 overflow-y-auto w-full">
         <div className="max-w-6xl mx-auto">
           
-          <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/[0.06]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.06]">
             <div>
-              <h1 className="text-3xl font-bold text-white tracking-tight">Admin Dashboard</h1>
-              <p className="text-slate-400 text-sm">Platform overview & live analytics</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Admin Dashboard</h1>
+              <p className="text-slate-400 text-xs sm:text-sm">Platform overview & live analytics</p>
             </div>
             <Link
               href="/admin/resources/new"
-              className="px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold rounded-xl text-sm transition-all shadow-lg shadow-sky-500/20 flex items-center gap-2"
+              className="px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-sky-500/20 flex items-center gap-2 shrink-0"
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
+              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">add</span>
               Add Resource
             </Link>
           </div>

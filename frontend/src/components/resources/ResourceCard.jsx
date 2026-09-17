@@ -11,12 +11,12 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
   const subjectCode = resource.subject?.code || resource.subjectCode || '';
 
   return (
-    <div className="group relative bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] hover:border-sky-500/30 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/5 hover:-translate-y-1 flex flex-col justify-between">
+    <div className="group relative bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] hover:border-sky-500/30 rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/5 hover:-translate-y-1 flex flex-col justify-between overflow-hidden">
       <div>
         
-        <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 flex-wrap">
           <ResourceTypeBadge type={resource.type} />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {onToggleFavorite && (
               <button
                 onClick={(e) => {
@@ -40,15 +40,15 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
 
         
         <Link href={`/resources/${resource._id}`} className="block group-hover:text-sky-400 transition-colors">
-          <h3 className="font-bold text-lg text-white tracking-tight line-clamp-2 mb-2">
+          <h3 className="font-bold text-base sm:text-lg text-white tracking-tight line-clamp-2 mb-2 break-words">
             {resource.title}
           </h3>
         </Link>
 
-        <p className="text-xs font-medium text-sky-400 mb-2">
+        <p className="text-xs font-medium text-sky-400 mb-2 truncate">
           {subjectName} {subjectCode && `(${subjectCode})`}
         </p>
-        <p className="text-sm text-slate-400 line-clamp-2 mb-6">
+        <p className="text-sm text-slate-400 line-clamp-2 mb-6 break-words">
           {resource.description || 'No detailed description provided.'}
         </p>
       </div>

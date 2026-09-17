@@ -176,7 +176,7 @@ export default function ResourceDetailPage({ params }) {
     <div className="min-h-screen flex flex-col justify-between">
       <Header />
 
-      <main className="w-full pt-28 pb-16 px-6 sm:px-8 max-w-5xl mx-auto">
+      <main className="w-full pt-20 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         {/* Back Link */}
         <Link
           href="/resources"
@@ -191,7 +191,7 @@ export default function ResourceDetailPage({ params }) {
         ) : error || !resource ? (
           <ErrorState message={error || 'Resource not found.'} />
         ) : (
-          <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl">
+          <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-4 sm:p-8 shadow-2xl overflow-hidden">
             {/* Header Metadata */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-white/[0.06]">
               <div className="flex items-center gap-3">
@@ -206,11 +206,11 @@ export default function ResourceDetailPage({ params }) {
             </div>
 
             {/* Title & Subject */}
-            <h1 className="text-3xl font-bold text-white tracking-tight mb-3">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3 break-words">
               {resource.title}
             </h1>
             {resource.subject && (
-              <p className="text-sm font-semibold text-sky-400 mb-6">
+              <p className="text-xs sm:text-sm font-semibold text-sky-400 mb-6 break-words">
                 Subject: {resource.subject.name}{resource.subject.code ? ` (${resource.subject.code})` : ''}
               </p>
             )}

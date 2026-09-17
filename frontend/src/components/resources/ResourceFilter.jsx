@@ -22,7 +22,7 @@ export default function ResourceFilter({
   onSearchChange,
 }) {
   return (
-    <div className="w-full bg-obsidian-800/40 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 mb-8 space-y-5">
+    <div className="w-full bg-obsidian-800/40 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-4 sm:p-6 mb-8 space-y-5 overflow-hidden">
      
       <div className="relative w-full">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">

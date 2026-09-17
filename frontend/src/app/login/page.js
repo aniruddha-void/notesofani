@@ -134,7 +134,7 @@ export default function UserSignInPage() {
             </Link>
           </div>
 
-          <div className="w-full max-w-[440px] bg-surface-container-low/95 backdrop-blur-xl rounded-xl p-8 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.45)] relative flex flex-col items-center text-center transition-all duration-300">
+          <div className="w-full max-w-[440px] bg-surface-container-low/95 backdrop-blur-xl rounded-xl p-6 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.45)] relative flex flex-col items-center text-center transition-all duration-300">
             <Image
               src="/images/logo.png"
               alt="NotesofAni"

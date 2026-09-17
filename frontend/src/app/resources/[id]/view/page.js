@@ -171,18 +171,18 @@ export default function PdfViewerPage({ params }) {
   return (
     <div className="min-h-screen bg-obsidian-950 flex flex-col justify-between text-slate-200">
       {/* PDF Header Controls */}
-      <header className="h-16 bg-obsidian-900 border-b border-white/[0.06] px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="min-h-16 py-2 sm:py-0 bg-obsidian-900 border-b border-white/[0.06] px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2 sm:gap-4 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
             href={`/resources/${id}`}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-colors shrink-0"
           >
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-            Back to Resource
+            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_back</span>
+            Back
           </Link>
-          <span className="text-slate-600">|</span>
-          <div className="flex items-center gap-3 truncate max-w-lg">
-            <h2 className="font-semibold text-white text-sm truncate">
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <div className="flex items-center gap-2 sm:gap-3 truncate min-w-0">
+            <h2 className="font-semibold text-white text-xs sm:text-sm truncate">
               {resource ? resource.title : 'Loading Document...'}
             </h2>
             {resource && <ResourceTypeBadge type={resource.type || resource.resourceType} />}
@@ -190,11 +190,11 @@ export default function PdfViewerPage({ params }) {
         </div>
 
         {user && resource && resource.isUnlocked && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={handleDownload}
               disabled={downloading}
-              className="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 shadow-md shadow-sky-500/20"
+              className="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 shadow-md shadow-sky-500/20"
             >
               <span className="material-symbols-outlined text-[16px]">download</span>
               {downloading ? 'Downloading...' : 'Download File'}
