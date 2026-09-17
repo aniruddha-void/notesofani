@@ -90,21 +90,18 @@ const resourceSchema = new mongoose.Schema(
   }
 );
 
-// Virtual alias: type <-> resourceType
 resourceSchema.virtual('type').get(function () {
   return this.resourceType;
 }).set(function (v) {
   this.resourceType = v;
 });
 
-// Virtual alias: status <-> published
 resourceSchema.virtual('status').get(function () {
   return this.published ? 'Published' : 'Draft';
 }).set(function (v) {
   this.published = v === 'Published' || v === true;
 });
 
-// Indexes for performance
 resourceSchema.index({ subject: 1, resourceType: 1, published: 1 });
 resourceSchema.index({ published: 1, createdAt: -1 });
 resourceSchema.index({ title: 'text', description: 'text' });
@@ -113,3 +110,4 @@ const Resource = mongoose.model('Resource', resourceSchema);
 
 module.exports = Resource;
 module.exports.OFFICIAL_RESOURCE_TYPES = OFFICIAL_RESOURCE_TYPES;
+

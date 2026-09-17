@@ -16,7 +16,7 @@ export default function Header() {
 
   const isActive = (path) => pathname === path;
 
-  // Close dropdown on outside click or Escape key
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -41,7 +41,7 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
-  // Close menu on route change
+ 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -63,7 +63,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-obsidian-900/80 backdrop-blur-xl border-b border-white/[0.06] transition-all">
       <div className="max-w-7xl mx-auto h-20 px-6 sm:px-8 flex items-center justify-between">
-        {/* Brand Logo */}
+      
         <Link href="/" className="flex items-center gap-3.5 group">
           <div className="w-9 h-9 rounded-lg overflow-hidden border border-white/10 group-hover:border-sky-500/40 transition-colors shadow-sm bg-obsidian-800 flex items-center justify-center">
             <Image
@@ -79,7 +79,7 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Primary Navigation */}
+   
         <nav className="hidden md:flex items-center gap-8 text-[14px]">
           <Link
             href="/"
@@ -123,7 +123,7 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Right Actions */}
+       
         <div className="flex items-center gap-4">
           <Link
             href="/favorites"
@@ -151,7 +151,7 @@ export default function Header() {
             <span className="material-symbols-outlined text-[20px]">download</span>
           </Link>
 
-          {/* Profile / Account Action Container */}
+         
           <div className="relative" ref={menuRef}>
             {user ? (
               <Link
@@ -182,7 +182,7 @@ export default function Header() {
               </button>
             )}
 
-            {/* Dropdown Menu (Logged out state only) */}
+          
             {!user && isMenuOpen && (
               <div
                 role="menu"

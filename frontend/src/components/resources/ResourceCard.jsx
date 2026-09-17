@@ -13,7 +13,7 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
   return (
     <div className="group relative bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] hover:border-sky-500/30 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/5 hover:-translate-y-1 flex flex-col justify-between">
       <div>
-        {/* Top Header: Badge + Favorite Toggle */}
+        
         <div className="flex items-center justify-between gap-3 mb-4">
           <ResourceTypeBadge type={resource.type} />
           <div className="flex items-center gap-2">
@@ -38,14 +38,13 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
           </div>
         </div>
 
-        {/* Title */}
+        
         <Link href={`/resources/${resource._id}`} className="block group-hover:text-sky-400 transition-colors">
           <h3 className="font-bold text-lg text-white tracking-tight line-clamp-2 mb-2">
             {resource.title}
           </h3>
         </Link>
 
-        {/* Subject & Description */}
         <p className="text-xs font-medium text-sky-400 mb-2">
           {subjectName} {subjectCode && `(${subjectCode})`}
         </p>
@@ -54,7 +53,7 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
         </p>
       </div>
 
-      {/* Footer Actions */}
+     
       <div className="pt-4 border-t border-white/[0.04] flex items-center justify-end text-xs text-slate-400">
         <div className="flex items-center gap-2">
           {resource.type === 'PDF' && (

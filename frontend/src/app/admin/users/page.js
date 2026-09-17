@@ -16,7 +16,7 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // User Details Modal State
+  
   const [selectedUser, setSelectedUser] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
     setUserDetails(null);
   };
 
-  // Close modal on Escape key
+ 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isModalOpen) {
@@ -118,7 +118,7 @@ export default function AdminUsersPage() {
 
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
+      
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.06]">
             <div>
               <h1 className="text-3xl font-bold text-white tracking-tight">Manage Users</h1>
@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
               </p>
             </div>
 
-            {/* Total Registered Count Badge */}
+            
             <div className="self-start md:self-auto px-4 py-2 bg-obsidian-900 border border-white/10 rounded-xl flex items-center gap-2">
               <span className="material-symbols-outlined text-sky-400 text-[20px]">group</span>
               <span className="text-xs text-slate-400 font-medium">Total Registered:</span>
@@ -135,7 +135,7 @@ export default function AdminUsersPage() {
             </div>
           </div>
 
-          {/* Search Bar */}
+     
           <div className="mb-8">
             <div className="relative max-w-md">
               <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
@@ -159,7 +159,7 @@ export default function AdminUsersPage() {
             </div>
           </div>
 
-          {/* User List / Table */}
+    
           {loading ? (
             <LoadingState message="Loading user directory..." />
           ) : users.length === 0 ? (
@@ -244,7 +244,7 @@ export default function AdminUsersPage() {
         </div>
       </main>
 
-      {/* User Details Modal (Read-Only) */}
+    
       {isModalOpen && selectedUser && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-in fade-in duration-150"
@@ -254,7 +254,6 @@ export default function AdminUsersPage() {
             className="bg-obsidian-900 border border-white/10 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-6">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-sky-400 text-[22px]">account_circle</span>
@@ -268,7 +267,7 @@ export default function AdminUsersPage() {
               </button>
             </div>
 
-            {/* Profile Info Banner */}
+           
             <div className="flex items-center gap-4 p-4 rounded-xl bg-obsidian-950 border border-white/[0.04] mb-6">
               <UserAvatar
                 src={selectedUser.profileImage || selectedUser.avatarUrl}
@@ -295,7 +294,7 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            {/* Account Activity Statistics */}
+        
             <div className="mb-6">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 Account Activity Summary
@@ -330,7 +329,6 @@ export default function AdminUsersPage() {
               )}
             </div>
 
-            {/* Read-Only Footer Note */}
             <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[16px] text-slate-400">lock</span>

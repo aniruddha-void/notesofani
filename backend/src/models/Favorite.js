@@ -20,7 +20,7 @@ const favoriteSchema = new mongoose.Schema(
   }
 );
 
-// Compound Unique Index: prevents duplicate favorite entries per user/resource pair
 favoriteSchema.index({ user: 1, resource: 1 }, { unique: true });
 
 module.exports = mongoose.model('Favorite', favoriteSchema);
+

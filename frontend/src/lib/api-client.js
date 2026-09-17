@@ -14,7 +14,7 @@ export const getFileUrl = (filePath) => {
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Ensures HTTP-only auth cookies are sent with requests
+  withCredentials: true, 
   headers: {
     'Content-Type': 'application/json',
   },

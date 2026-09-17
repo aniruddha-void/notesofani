@@ -1,10 +1,6 @@
 const nodemailer = require('nodemailer');
 const { createTransporter } = require('../config/mailer');
 
-/**
- * Sends notification email when a user submits the Contact Us form
- * @param {Object} contactData - { name, email, subject, message }
- */
 const sendContactNotification = async (contactData) => {
   console.log('[EmailService] Starting contact email send');
 

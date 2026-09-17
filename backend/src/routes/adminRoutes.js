@@ -10,7 +10,6 @@ const {
 } = require('../controllers/contactController');
 const { protectAdmin } = require('../middlewares/adminMiddleware');
 
-// All admin routes require Admin authorization
 router.use(protectAdmin);
 
 router.get('/stats', getStats);
@@ -18,12 +17,10 @@ router.get('/resources', getAllResourcesAdmin);
 router.get('/users', getUsersAdmin);
 router.get('/users/:id', getUserByIdAdmin);
 
-// Contact Messages Admin Routes
 router.get('/contact-messages', getContactMessagesAdmin);
 router.get('/contact-messages/:id', getContactMessageByIdAdmin);
 router.patch('/contact-messages/:id/status', updateContactMessageStatusAdmin);
 router.delete('/contact-messages/:id', deleteContactMessageAdmin);
 
 module.exports = router;
-
 

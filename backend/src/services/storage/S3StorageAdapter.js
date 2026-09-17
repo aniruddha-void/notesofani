@@ -1,12 +1,5 @@
 const IStorageService = require('./IStorageService');
 
-/**
- * S3StorageAdapter
- * Production cloud storage adapter for AWS S3 and S3-compatible providers (Backblaze B2, Cloudflare R2, MinIO).
- * Extends IStorageService.
- * Supports Backblaze B2 environment variables natively (B2_BUCKET_NAME, B2_ENDPOINT, B2_REGION, B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY)
- * with transparent fallback to standard AWS S3 variables.
- */
 class S3StorageAdapter extends IStorageService {
   constructor(config = {}) {
     super();
@@ -17,7 +10,6 @@ class S3StorageAdapter extends IStorageService {
     this.secretAccessKey = config.secretAccessKey || process.env.B2_APPLICATION_KEY || process.env.AWS_SECRET_ACCESS_KEY;
     this.s3Client = null;
 
-    // Initialize S3-compatible client if SDK is installed and credentials exist
     if (this.bucketName && this.accessKeyId && this.secretAccessKey) {
       try {
         const { S3Client } = require('@aws-sdk/client-s3');
@@ -37,14 +29,11 @@ class S3StorageAdapter extends IStorageService {
 
         this.s3Client = new S3Client(clientOptions);
       } catch (_) {
-        // @aws-sdk/client-s3 not installed; operations will validate requirement at runtime
+
       }
     }
   }
 
-  /**
-   * Helper to verify object storage credentials are configured before performing operations
-   */
   _verifyCredentials() {
     if (!this.bucketName || !this.accessKeyId || !this.secretAccessKey) {
       throw new Error(
@@ -54,12 +43,6 @@ class S3StorageAdapter extends IStorageService {
     }
   }
 
-  /**
-   * Uploads file to Backblaze B2 / S3 Object Storage
-   * @param {Object} file - Multer file object / payload (buffer or path)
-   * @param {string} folder - Destination folder / key prefix (default: 'pdf')
-   * @returns {Promise<{ url: string, key: string }>}
-   */
   async uploadFile(file, folder = 'pdf') {
     this._verifyCredentials();
 
@@ -105,16 +88,6 @@ class S3StorageAdapter extends IStorageService {
     };
   }
 
-  /**
-   * Deletes file from Backblaze B2 / S3 Object Storage
-   * @param {string} keyOrUrl - Object key or public URL
-   * @returns {Promise<boolean>}
-   */
-  /**
-   * Helper method to parse S3/B2 Object Key from a URL or key path
-   * @param {string} keyOrUrl
-   * @returns {string}
-   */
   _extractKey(keyOrUrl) {
     if (!keyOrUrl) return '';
     let fileKey = keyOrUrl;
@@ -143,11 +116,6 @@ class S3StorageAdapter extends IStorageService {
     return fileKey;
   }
 
-  /**
-   * Deletes file from Backblaze B2 / S3 Object Storage
-   * @param {string} keyOrUrl - Object key or public URL
-   * @returns {Promise<boolean>}
-   */
   async deleteFile(keyOrUrl) {
     if (!keyOrUrl) return false;
     this._verifyCredentials();
@@ -172,11 +140,6 @@ class S3StorageAdapter extends IStorageService {
     return true;
   }
 
-  /**
-   * Retrieves a readable stream for an object in Backblaze B2 / S3 Object Storage
-   * @param {string} keyOrUrl - Object key or URL
-   * @returns {Promise<import('stream').Readable|null>}
-   */
   async getFileStream(keyOrUrl) {
     if (!keyOrUrl) return null;
     this._verifyCredentials();
@@ -191,7 +154,7 @@ class S3StorageAdapter extends IStorageService {
           Key: fileKey,
         });
         const response = await this.s3Client.send(command);
-        return response.Body; // Readable stream
+        return response.Body;
       } catch (err) {
         console.error('[StorageAdapter GetStream Error]:', err.message || err);
         return null;
@@ -203,3 +166,4 @@ class S3StorageAdapter extends IStorageService {
 }
 
 module.exports = S3StorageAdapter;
+

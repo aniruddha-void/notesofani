@@ -36,7 +36,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Virtual helper for profileImage / avatarUrl compatibility
 userSchema.pre('save', function (next) {
   if (this.profileImage && !this.avatarUrl) {
     this.avatarUrl = this.profileImage;
@@ -47,3 +46,4 @@ userSchema.pre('save', function (next) {
 });
 
 module.exports = mongoose.model('User', userSchema);
+

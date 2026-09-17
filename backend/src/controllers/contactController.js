@@ -1,10 +1,6 @@
 const ContactMessage = require('../models/ContactMessage');
 const { sendContactNotification } = require('../services/emailService');
 
-/**
- * POST /api/v1/contact (Public)
- * Validates and records contact message in MongoDB & triggers email notification to admin.
- */
 const submitContactForm = async (req, res) => {
   try {
     let { name, email, subject, message } = req.body || {};
@@ -66,7 +62,6 @@ const submitContactForm = async (req, res) => {
 
     console.log('[Contact] Received authenticated contact submission');
 
-    // Save ContactMessage in MongoDB with authenticated user reference
     const contactMessage = await ContactMessage.create({
       name: trimmedName,
       email: trimmedEmail,
@@ -78,7 +73,6 @@ const submitContactForm = async (req, res) => {
 
     console.log('[Contact] ContactMessage saved');
 
-    // Attempt Nodemailer email send
     const emailResult = await sendContactNotification({
       name: contactMessage.name,
       email: contactMessage.email,
@@ -117,10 +111,6 @@ const submitContactForm = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/admin/contact-messages (Admin Only)
- * Returns a list of contact messages with status filtering, regex search, and pagination.
- */
 const getContactMessagesAdmin = async (req, res) => {
   try {
     const { status, search, page = 1, limit = 20 } = req.query;
@@ -129,14 +119,12 @@ const getContactMessagesAdmin = async (req, res) => {
 
     let query = {};
 
-    // Status filter
     if (status && status !== 'All') {
-      // Support case-insensitive match for Unread/Read/Resolved
+
       const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
       query.status = { $regex: new RegExp(`^${formattedStatus}$`, 'i') };
     }
 
-    // Search filter
     if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i');
       query.$or = [
@@ -175,10 +163,6 @@ const getContactMessagesAdmin = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/admin/contact-messages/:id (Admin Only)
- * Returns a single contact message details by ID.
- */
 const getContactMessageByIdAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -206,10 +190,6 @@ const getContactMessageByIdAdmin = async (req, res) => {
   }
 };
 
-/**
- * PATCH /api/v1/admin/contact-messages/:id/status (Admin Only)
- * Updates the status of a contact message (Unread, Read, Resolved).
- */
 const updateContactMessageStatusAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -222,7 +202,6 @@ const updateContactMessageStatusAdmin = async (req, res) => {
       });
     }
 
-    // Capitalize first letter to match model enum format (Unread, Read, Resolved)
     const formattedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
     const message = await ContactMessage.findByIdAndUpdate(
@@ -254,10 +233,6 @@ const updateContactMessageStatusAdmin = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/v1/admin/contact-messages/:id (Admin Only)
- * Deletes a contact message record.
- */
 const deleteContactMessageAdmin = async (req, res) => {
   try {
     const { id } = req.params;

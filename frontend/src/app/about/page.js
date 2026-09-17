@@ -14,7 +14,7 @@ export default function AboutPage() {
       <main className="w-full flex-1 pt-16 bg-background">
         <div className="max-w-5xl mx-auto px-gutter py-space-xl">
           <div className="flex flex-col w-full">
-            {/* Hero Section */}
+
             <section className="relative w-full py-space-xl flex flex-col items-start overflow-hidden">
               <div className="absolute -top-24 -left-20 w-80 h-80 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
               <div className="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-label-tag text-label-tag uppercase tracking-widest mb-space-md">
@@ -31,7 +31,6 @@ export default function AboutPage() {
               <div className="w-full h-px bg-outline-variant/30 mt-space-xl"></div>
             </section>
 
-            {/* Core Mission Section */}
             <section className="w-full py-space-lg">
               <div className="relative overflow-hidden rounded-xl bg-surface-container-low p-space-xl transition-all duration-300 hover:bg-surface-container">
                 <div className="absolute top-0 right-0 p-space-lg opacity-10 pointer-events-none">
@@ -49,7 +48,6 @@ export default function AboutPage() {
               </div>
             </section>
 
-            {/* How It Works Section */}
             <section className="w-full py-space-xl">
               <div className="flex items-baseline justify-between mb-space-lg">
                 <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">How it works</h2>
@@ -88,7 +86,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            {/* Creator Section */}
+
             <section className="w-full py-space-xl">
               <div className="rounded-xl bg-surface-container-low p-space-lg md:p-space-xl transition-all duration-300 hover:bg-surface-container">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-space-lg">
@@ -116,7 +114,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            {/* CTA Section */}
+
             <section className="w-full py-space-xl">
               <div className="relative py-space-xl text-center flex flex-col items-center justify-center">
                 <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight mb-space-xs">Ready to explore?</h2>

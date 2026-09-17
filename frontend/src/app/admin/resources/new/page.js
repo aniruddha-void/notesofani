@@ -205,7 +205,7 @@ export default function AddResourcePage() {
               ></textarea>
             </div>
 
-            {/* Password Protection Option */}
+        
             <div className="bg-obsidian-950/60 border border-white/10 rounded-xl p-4 space-y-4">
               <div className="flex items-center gap-3">
                 <input
@@ -264,7 +264,7 @@ export default function AddResourcePage() {
               </div>
             )}
 
-            {/* File Upload for PYQ */}
+
             {formData.type === 'PYQ' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
@@ -280,7 +280,7 @@ export default function AddResourcePage() {
               </div>
             )}
 
-            {/* Video URL */}
+           
             {formData.type === 'Video' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
@@ -297,7 +297,7 @@ export default function AddResourcePage() {
               </div>
             )}
 
-            {/* Google Drive URL */}
+           
             {formData.type === 'Google Drive' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
@@ -314,7 +314,7 @@ export default function AddResourcePage() {
               </div>
             )}
 
-            {/* Useful Link URL */}
+         
             {formData.type === 'Useful Link' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">

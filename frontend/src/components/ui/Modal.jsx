@@ -27,7 +27,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
         className="relative w-full max-w-md bg-obsidian-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6 text-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header (optional if provided) */}
+        
         {title && (
           <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-6">
             <h3 id="modal-title" className="text-lg font-bold text-white tracking-tight">
@@ -44,7 +44,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
           </div>
         )}
 
-        {/* Content */}
+        
         <div>{children}</div>
       </div>
     </div>

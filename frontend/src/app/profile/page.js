@@ -73,7 +73,7 @@ export default function ProfilePage() {
 
       <main className="w-full pt-28 pb-16 px-6 sm:px-8 max-w-4xl mx-auto">
         <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl">
-          {/* Profile Header */}
+          
           <div className="flex items-center gap-6 pb-8 border-b border-white/[0.06] mb-8">
             <UserAvatar
               src={user.avatarUrl}
@@ -89,7 +89,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Learning Overview */}
+         
           <div className="mb-8">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
               Your Learning Overview
@@ -118,7 +118,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Quick Shortcuts */}
+     
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <Link
               href="/favorites"
@@ -151,7 +151,6 @@ export default function ProfilePage() {
             </Link>
           </div>
 
-          {/* Recently Viewed */}
           <div className="mb-8 pt-8 border-t border-white/[0.06]">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
               Recently Viewed
@@ -208,7 +207,7 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Sign Out */}
+       
           <div className="pt-6 border-t border-white/[0.06] flex justify-end">
             <button
               onClick={logoutUser}

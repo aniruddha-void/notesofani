@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
 
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
+          
           <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/[0.06]">
             <div>
               <h1 className="text-3xl font-bold text-white tracking-tight">Admin Dashboard</h1>
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
             </div>
           ) : (
             <>
-              {/* Primary Stat Counters */}
+             
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <div className="bg-obsidian-900 border border-white/[0.06] p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-3">
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Resource Distribution by Official Types */}
+             
               <div className="bg-obsidian-900 border border-white/[0.06] p-8 rounded-2xl">
                 <h3 className="text-lg font-bold text-white mb-6">Resource Distribution by Type</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">

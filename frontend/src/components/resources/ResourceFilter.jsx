@@ -23,7 +23,7 @@ export default function ResourceFilter({
 }) {
   return (
     <div className="w-full bg-obsidian-800/40 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 mb-8 space-y-5">
-      {/* Search Bar */}
+     
       <div className="relative w-full">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
           search
@@ -46,7 +46,7 @@ export default function ResourceFilter({
         )}
       </div>
 
-      {/* LMS Subject Explorer Bar (Pill selector for Subjects) */}
+      
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
@@ -100,7 +100,7 @@ export default function ResourceFilter({
         </div>
       </div>
 
-      {/* Filter Pills for Resource Type */}
+    
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-2 border-t border-white/[0.04]">
         <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider mr-2 shrink-0">
           Resource Type:
@@ -124,9 +124,9 @@ export default function ResourceFilter({
         })}
       </div>
 
-      {/* Dropdown Selects */}
+   
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/[0.04]">
-        {/* Subject Filter Dropdown */}
+        
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Subject Dropdown
@@ -145,7 +145,7 @@ export default function ResourceFilter({
           </select>
         </div>
 
-        {/* Resource Type Filter Dropdown */}
+        
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Resource Type Dropdown

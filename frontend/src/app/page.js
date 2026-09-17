@@ -48,17 +48,17 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-obsidian-900 font-sans antialiased text-slate-200 selection:bg-sky-500/20 selection:text-sky-300 relative overflow-x-hidden">
-      {/* Ambient Glow Elements */}
+      
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[480px] bg-gradient-to-b from-sky-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
       <div className="fixed top-1/2 -right-48 w-[400px] h-[400px] bg-sky-900/10 blur-[120px] pointer-events-none -z-10"></div>
 
       <Header />
 
       <main className="w-full pt-20">
-        {/* HERO SECTION: Spacious, Calm, Confident Editorial Presence */}
+        
         <section className="w-full pt-28 pb-20 px-6 sm:px-8 text-center relative">
           <div className="max-w-4xl mx-auto flex flex-col items-center">
-            {/* Refined Editorial Title */}
+            
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.08] text-balance">
               Notes. Resources.<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 via-sky-200 to-sky-400">
@@ -66,12 +66,12 @@ export default function HomePage() {
               </span>
             </h1>
 
-            {/* Subtitle */}
+            
             <p className="mt-6 sm:mt-7 text-base sm:text-lg md:text-xl text-slate-400 font-light max-w-2xl text-balance leading-relaxed">
               Discover notes, PDFs and useful resources — simple, organized and always within reach.
             </p>
 
-            {/* Centered Focused Search Bar */}
+            
             <div className="w-full max-w-2xl mt-10 relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500/30 to-blue-600/20 rounded-2xl blur-lg opacity-40 group-hover:opacity-75 group-focus-within:opacity-100 group-focus-within:from-sky-500/50 group-focus-within:to-blue-500/30 transition duration-500"></div>
               <form
@@ -92,7 +92,7 @@ export default function HomePage() {
               </form>
             </div>
 
-            {/* SIMPLE CATEGORIES BAR */}
+            
             <div className="mt-12 flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 max-w-2xl">
               {OFFICIAL_CATEGORIES.map((cat) => (
                 <button
@@ -111,7 +111,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* EXPLORE RESOURCES: Cover-First High-End Document Showcase */}
+       
         <section className="max-w-7xl mx-auto px-6 sm:px-8 py-16" id="resources">
           <div className="flex items-baseline justify-between border-b border-white/[0.06] pb-6 mb-12">
             <div>

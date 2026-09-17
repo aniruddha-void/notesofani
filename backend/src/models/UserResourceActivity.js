@@ -28,8 +28,8 @@ const userResourceActivitySchema = new mongoose.Schema(
   }
 );
 
-// Compound Unique Index: prevents duplicate user-resource activity records
 userResourceActivitySchema.index({ user: 1, resource: 1 }, { unique: true });
 userResourceActivitySchema.index({ user: 1, lastViewedAt: -1 });
 
 module.exports = mongoose.model('UserResourceActivity', userResourceActivitySchema);
+

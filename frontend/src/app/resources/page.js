@@ -20,17 +20,17 @@ export default function ResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
 
-  // Filter States
+ 
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Subject Inventory state (STABLE full inventory for active subject banner)
+  
   const [subjectInventory, setSubjectInventory] = useState([]);
 
-  // Fetch subjects with resource counts
+
   useEffect(() => {
     async function fetchSubjects() {
       try {
@@ -45,7 +45,7 @@ export default function ResourcesPage() {
     fetchSubjects();
   }, []);
 
-  // Fetch user favorites if logged in
+
   useEffect(() => {
     async function fetchUserFavorites() {
       if (user) {
@@ -62,7 +62,7 @@ export default function ResourcesPage() {
     fetchUserFavorites();
   }, [user]);
 
-  // Fetch stable full subject inventory whenever selectedSubject changes (unfiltered by selectedType)
+ 
   useEffect(() => {
     async function fetchSubjectInventory() {
       if (!selectedSubject) {
@@ -81,7 +81,7 @@ export default function ResourcesPage() {
     fetchSubjectInventory();
   }, [selectedSubject]);
 
-  // Fetch filtered display resources when filters change
+  
   useEffect(() => {
     async function fetchResources() {
       try {
@@ -128,7 +128,7 @@ export default function ResourcesPage() {
 
   const activeSubjectObj = subjects.find((s) => s._id === selectedSubject);
 
-  // Compute STABLE type counts from full subjectInventory (independent of type filter)
+  
   const subjectTypeCounts = OFFICIAL_TYPES.reduce((acc, t) => {
     acc[t] = subjectInventory.filter((r) => r.type === t).length;
     return acc;
@@ -141,7 +141,7 @@ export default function ResourcesPage() {
       <Header />
 
       <main className="w-full pt-28 pb-16 px-6 sm:px-8 max-w-7xl mx-auto">
-        {/* Page Header */}
+      
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
             Study Material Library
@@ -151,7 +151,7 @@ export default function ResourcesPage() {
           </p>
         </div>
 
-        {/* Filter Toolbar */}
+       
         <ResourceFilter
           subjects={subjects}
           selectedSubject={selectedSubject}
@@ -162,7 +162,7 @@ export default function ResourcesPage() {
           onSearchChange={(val) => { setSearchTerm(val); setPage(1); }}
         />
 
-        {/* Dedicated LMS Subject Header Banner when a Subject is selected */}
+       
         {activeSubjectObj && (
           <div className="bg-obsidian-900 border border-sky-500/30 rounded-2xl p-6 mb-8 shadow-xl shadow-sky-500/5 backdrop-blur-xl">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-white/[0.06]">
@@ -180,7 +180,7 @@ export default function ResourcesPage() {
               </div>
             </div>
 
-            {/* STABLE Type Breakdown Counters */}
+           
             <div className="flex flex-wrap items-center gap-3 text-xs">
               <span className="text-slate-400 font-semibold uppercase text-[11px]">Breakdown:</span>
               {OFFICIAL_TYPES.map((t) => (
@@ -201,7 +201,7 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        {/* Resources Grid / State */}
+        
         {loading ? (
           <LoadingState message="Fetching study resources..." />
         ) : resources.length === 0 ? (
@@ -228,7 +228,7 @@ export default function ResourcesPage() {
           />
         ) : (
           <>
-            {/* Subject View: Grouped by Type when viewing a Subject and 'All Types' selected */}
+          
             {selectedSubject && !selectedType && !searchTerm ? (
               <div className="space-y-10 mb-12">
                 {OFFICIAL_TYPES.map((type) => {
@@ -258,7 +258,7 @@ export default function ResourcesPage() {
                 })}
               </div>
             ) : (
-              /* Flat Grid View when filtering by specific Type, Search, or All Subjects */
+              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {resources.map((res) => (
                   <ResourceCard
@@ -271,7 +271,7 @@ export default function ResourcesPage() {
               </div>
             )}
 
-            {/* Pagination Controls */}
+            
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-3">
                 <button

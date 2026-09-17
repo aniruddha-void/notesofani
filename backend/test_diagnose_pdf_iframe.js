@@ -66,7 +66,6 @@ async function diagnose() {
       });
     };
 
-    // Test A: Direct static upload request (/uploads/pdf/...)
     console.log('\n[DIAG A] Direct Static Upload Request:');
     const resA = await makeReq({
       hostname: 'localhost',
@@ -79,7 +78,6 @@ async function diagnose() {
     console.log(`X-Frame-Options: ${resA.headers['x-frame-options']}`);
     console.log(`Access-Control-Allow-Origin: ${resA.headers['access-control-allow-origin']}`);
 
-    // Test B: Authenticated Download/Stream Endpoint (/api/v1/resources/:id/download)
     console.log('\n[DIAG B] Authenticated API Stream Request:');
     const resB = await makeReq({
       hostname: 'localhost',
@@ -110,3 +108,4 @@ async function diagnose() {
 }
 
 diagnose();
+

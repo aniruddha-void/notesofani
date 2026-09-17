@@ -15,7 +15,6 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // If already logged in as admin, redirect
   if (admin) {
     if (typeof window !== 'undefined') {
       router.push('/admin/dashboard');
@@ -47,7 +46,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="bg-surface font-body-md text-on-surface min-h-screen flex flex-col justify-between selection:bg-primary selection:text-on-primary">
-      {/* Admin Header */}
+    
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
         <div className="h-16 w-full px-gutter-lg flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-space-sm">
@@ -73,12 +72,12 @@ export default function AdminLoginPage() {
         </div>
       </header>
 
-      {/* Main Form Section */}
+      
       <main className="w-full pt-16 flex-1 flex flex-col items-center justify-center px-gutter">
         <div className="flex flex-col w-full items-center justify-center py-space-xl px-gutter relative overflow-hidden">
           <div className="w-full max-w-[440px] relative z-10">
 
-            {/* Error Alert Banner */}
+           
             {errorMsg && (
               <div className="mb-space-md bg-error-container/40 border-0 rounded-xl p-space-sm pl-space-md flex items-center justify-between text-on-error-container shadow-md backdrop-blur-md transition-all duration-300">
                 <div className="flex items-center gap-space-sm">
@@ -95,9 +94,9 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            {/* Main Authentication Surface */}
+           
             <div className="bg-surface-container rounded-xl border border-outline-variant/30 shadow-lg p-space-lg sm:p-space-xl flex flex-col relative overflow-hidden">
-              {/* Card Header: Logo & Titles */}
+            
               <div className="flex flex-col items-center text-center">
                 <div className="relative group mb-space-md">
                   <div className="w-16 h-16 rounded-xl bg-surface-container-lowest flex items-center justify-center p-2.5 shadow-md">
@@ -122,9 +121,9 @@ export default function AdminLoginPage() {
                 </p>
               </div>
 
-              {/* Authentication Form */}
+             
               <form className="mt-space-lg flex flex-col gap-space-md" onSubmit={handleSubmit}>
-                {/* Field 1: Email Address */}
+             
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-code text-label-code text-on-surface-variant font-medium flex items-center justify-between" htmlFor="adminEmail">
                     Email Address
@@ -146,7 +145,7 @@ export default function AdminLoginPage() {
                   </div>
                 </div>
 
-                {/* Field 2: Password */}
+               
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-code text-label-code text-on-surface-variant font-medium" htmlFor="adminPassword">
                     Password
@@ -178,7 +177,7 @@ export default function AdminLoginPage() {
                   </div>
                 </div>
 
-                {/* Submit Button */}
+              
                 <button
                   className="w-full h-11 mt-space-xs rounded-lg bg-primary-container text-on-primary-container font-headline-sm text-body-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed hover:text-on-primary-fixed transition-all duration-200 active:scale-[0.99] shadow-md shadow-primary-container/20 group disabled:opacity-50"
                   id="submitButton"
@@ -196,7 +195,7 @@ export default function AdminLoginPage() {
         </div>
       </main>
 
-      {/* Footer */}
+     
       <footer className="w-full bg-surface-container-lowest py-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
         <div className="w-full max-w-7xl mx-auto px-gutter-lg flex flex-col sm:flex-row items-center justify-between gap-space-md">
           <div className="flex items-center gap-space-sm">

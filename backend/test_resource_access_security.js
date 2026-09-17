@@ -53,7 +53,6 @@ async function runTest() {
     fs.writeFileSync(pdfPath, '%PDF-1.4 Security Mock Content');
     const fileUrlPdf = `/uploads/pdf/${path.basename(pdfPath)}`;
 
-    // 1. PDF
     resPdf = await Resource.create({
       title: 'Unprotected PDF Resource',
       subject: subject._id,
@@ -63,7 +62,6 @@ async function runTest() {
       published: true,
     });
 
-    // 2. Video
     resVideo = await Resource.create({
       title: 'Unprotected Video Resource',
       subject: subject._id,
@@ -73,7 +71,6 @@ async function runTest() {
       published: true,
     });
 
-    // 3. PYQ
     resPyq = await Resource.create({
       title: 'Unprotected PYQ Resource',
       subject: subject._id,
@@ -83,7 +80,6 @@ async function runTest() {
       published: true,
     });
 
-    // 4. Google Drive
     resDrive = await Resource.create({
       title: 'Unprotected Google Drive Resource',
       subject: subject._id,
@@ -93,7 +89,6 @@ async function runTest() {
       published: true,
     });
 
-    // 5. Useful Link
     resLink = await Resource.create({
       title: 'Unprotected Useful Link Resource',
       subject: subject._id,
@@ -103,7 +98,6 @@ async function runTest() {
       published: true,
     });
 
-    // 6. Protected Resource (Password = pass12345)
     const hash = await bcrypt.hash('pass12345', 10);
     resProtected = await Resource.create({
       title: 'Protected PDF Resource',
@@ -137,7 +131,6 @@ async function runTest() {
       });
     };
 
-    // TEST 1: Logged Out GET /api/v1/resources -> Expect NO fileUrl or externalUrl exposed for ANY resource
     console.log('\n[TEST 1] Logged-out GET /api/v1/resources...');
     const r1 = await makeRequest({ hostname: 'localhost', port: testPort, path: '/api/v1/resources', method: 'GET' });
     const j1 = JSON.parse(r1.text).data.resources;
@@ -147,7 +140,6 @@ async function runTest() {
     }
     console.log('PASS: Logged-out resource catalog returns metadata ONLY. No fileUrl or externalUrl exposed.');
 
-    // TEST 2: Logged Out GET /api/v1/resources/:id -> Expect NO fileUrl or externalUrl
     console.log('\n[TEST 2] Logged-out GET /api/v1/resources/:id for Video & PDF...');
     const r2Video = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resVideo._id}`, method: 'GET' });
     const j2Video = JSON.parse(r2Video.text).data.resource;
@@ -156,7 +148,6 @@ async function runTest() {
     }
     console.log('PASS: Logged-out resource detail hides externalUrl and fileUrl.');
 
-    // TEST 3: Logged Out Download Request -> Expect 401 Unauthorized
     console.log('\n[TEST 3] Logged-out Download Request...');
     const r3 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resPdf._id}/download`, method: 'POST' });
     if (r3.statusCode !== 401) throw new Error(`Expected 401 for logged-out download, got ${r3.statusCode}`);
@@ -164,7 +155,6 @@ async function runTest() {
     if (dlCount !== 0) throw new Error('Download record created for logged-out request!');
     console.log('PASS: Logged-out download request rejected with 401 and 0 Download records created.');
 
-    // TEST 4: Logged Out Password Unlock Request -> Expect 401 Unauthorized
     console.log('\n[TEST 4] Logged-out Password Unlock Request...');
     const postData4 = JSON.stringify({ password: 'pass12345' });
     const r4 = await makeRequest(
@@ -180,7 +170,6 @@ async function runTest() {
     if (r4.statusCode !== 401) throw new Error(`Expected 401 for logged-out password verify, got ${r4.statusCode}`);
     console.log('PASS: Logged-out password verification rejected with 401 (Google Login required FIRST).');
 
-    // TEST 5: Logged In Access to Unprotected Resources -> Expect 200 & content URLs returned
     console.log('\n[TEST 5] Logged-in GET /api/v1/resources/:id for Unprotected Video & Drive...');
     const r5Video = await makeRequest({
       hostname: 'localhost',
@@ -195,7 +184,6 @@ async function runTest() {
     }
     console.log('PASS: Logged-in user receives unlocked content URLs for unprotected resources.');
 
-    // TEST 6: Logged In Access to Protected Resource -> Requires Password Unlock (Layer 2)
     console.log('\n[TEST 6] Logged-in Password Unlock for Protected Resource (Layer 1 + Layer 2)...');
     const r6Locked = await makeRequest({
       hostname: 'localhost',
@@ -252,3 +240,4 @@ async function runTest() {
 }
 
 runTest();
+

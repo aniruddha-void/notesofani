@@ -10,12 +10,8 @@ const {
 const { protectUser } = require('../middlewares/authMiddleware');
 const { protectAdmin } = require('../middlewares/adminMiddleware');
 
-// Contact routes for student inquiries
-// POST /api/v1/contact (Protected - Authenticated User Required)
 router.post('/', protectUser, submitContactForm);
 
-// Contact Admin routes
-// GET /api/v1/contact/admin (Protected - Admin Required)
 router.get('/admin', protectAdmin, getContactMessagesAdmin);
 router.get('/admin/:id', protectAdmin, getContactMessageByIdAdmin);
 router.patch('/admin/:id', protectAdmin, updateContactMessageStatusAdmin);

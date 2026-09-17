@@ -20,7 +20,7 @@ export default function AdminSidebar() {
   return (
     <aside className="w-64 bg-obsidian-950 border-r border-white/[0.06] min-h-screen p-6 flex flex-col justify-between shrink-0">
       <div>
-        {/* Brand Header */}
+        
         <div className="flex items-center gap-3 mb-10 pb-6 border-b border-white/[0.06]">
           <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-sm">
             NA
@@ -35,7 +35,7 @@ export default function AdminSidebar() {
           </div>
         </div>
 
-        {/* Navigation Links */}
+       
         <nav className="space-y-1.5">
           <Link
             href="/admin/dashboard"
@@ -99,7 +99,7 @@ export default function AdminSidebar() {
         </nav>
       </div>
 
-      {/* Admin Profile & Logout */}
+    
       <div className="pt-6 border-t border-white/[0.06]">
         {admin && (
           <div className="mb-4 px-2">

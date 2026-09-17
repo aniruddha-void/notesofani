@@ -1,6 +1,5 @@
 const multer = require('multer');
 
-// Configure Multer in memory or disk format for StorageFactory processing
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -24,8 +23,9 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 25 * 1024 * 1024, // 25 MB file limit
+    fileSize: 25 * 1024 * 1024,
   },
 });
 
 module.exports = upload;
+

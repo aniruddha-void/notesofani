@@ -59,7 +59,6 @@ async function runTest() {
     const fileUrlPdf = `/uploads/pdf/${path.basename(pdfPath)}`;
     const fileUrlPyq = `/uploads/pdf/${path.basename(pyqPath)}`;
 
-    // 1. PDF Resource
     resPdf = await Resource.create({
       title: 'Advanced Mathematics PDF',
       description: 'PDF Textbook',
@@ -70,7 +69,6 @@ async function runTest() {
       published: true,
     });
 
-    // 2. Video Resource
     resVideo = await Resource.create({
       title: 'Physics Video Lecture',
       description: 'YouTube Video',
@@ -81,7 +79,6 @@ async function runTest() {
       published: true,
     });
 
-    // 3. PYQ Resource
     resPyq = await Resource.create({
       title: '2025 Semester Exam PYQ Paper',
       description: 'Previous Year Question Paper',
@@ -92,7 +89,6 @@ async function runTest() {
       published: true,
     });
 
-    // 4. Google Drive Resource
     resDrive = await Resource.create({
       title: 'Lab Manuals Google Drive Folder',
       description: 'Shared Drive Material',
@@ -103,7 +99,6 @@ async function runTest() {
       published: true,
     });
 
-    // 5. Useful Link Resource
     resLink = await Resource.create({
       title: 'Official Documentation Website',
       description: 'Reference Link',
@@ -114,7 +109,6 @@ async function runTest() {
       published: true,
     });
 
-    // 6. Protected Video Resource
     const hash = await bcrypt.hash('videopass123', 10);
     resProtected = await Resource.create({
       title: 'Exclusive Premium Video Lecture',
@@ -154,14 +148,12 @@ async function runTest() {
       });
     };
 
-    // TEST 1: PDF Resource API structure
     console.log('\n[TEST 1] Testing PDF Resource payload...');
     const r1 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resPdf._id}`, method: 'GET' });
     const j1 = JSON.parse(r1.text).data.resource;
     if (j1.resourceType !== 'PDF' || !j1.fileUrl) throw new Error('PDF payload structure invalid');
     console.log('PASS: PDF resource returned resourceType PDF and valid fileUrl.');
 
-    // TEST 2: Video Resource API structure
     console.log('\n[TEST 2] Testing Video Resource payload...');
     const r2 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resVideo._id}`, method: 'GET' });
     const j2 = JSON.parse(r2.text).data.resource;
@@ -170,14 +162,12 @@ async function runTest() {
     }
     console.log('PASS: Video resource returned resourceType Video and valid externalUrl.');
 
-    // TEST 3: PYQ Resource API structure
     console.log('\n[TEST 3] Testing PYQ Resource payload...');
     const r3 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resPyq._id}`, method: 'GET' });
     const j3 = JSON.parse(r3.text).data.resource;
     if (j3.resourceType !== 'PYQ' || !j3.fileUrl) throw new Error('PYQ payload structure invalid');
     console.log('PASS: PYQ resource returned resourceType PYQ and valid fileUrl.');
 
-    // TEST 4: Google Drive Resource API structure
     console.log('\n[TEST 4] Testing Google Drive Resource payload...');
     const r4 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resDrive._id}`, method: 'GET' });
     const j4 = JSON.parse(r4.text).data.resource;
@@ -186,7 +176,6 @@ async function runTest() {
     }
     console.log('PASS: Google Drive resource returned resourceType Google Drive and valid externalUrl.');
 
-    // TEST 5: Useful Link Resource API structure
     console.log('\n[TEST 5] Testing Useful Link Resource payload...');
     const r5 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resLink._id}`, method: 'GET' });
     const j5 = JSON.parse(r5.text).data.resource;
@@ -195,7 +184,6 @@ async function runTest() {
     }
     console.log('PASS: Useful Link resource returned resourceType Useful Link and valid externalUrl.');
 
-    // TEST 6: Protected External Resource Security
     console.log('\n[TEST 6] Testing Protected Video Resource security before unlock...');
     const r6 = await makeRequest({ hostname: 'localhost', port: testPort, path: `/api/v1/resources/${resProtected._id}`, method: 'GET' });
     const j6 = JSON.parse(r6.text).data.resource;
@@ -204,7 +192,6 @@ async function runTest() {
     }
     console.log('PASS: Protected Video hides externalUrl prior to password unlock.');
 
-    // TEST 7: Password Unlock for Protected Video
     console.log('\n[TEST 7] Unlocking Protected Video with correct password...');
     const postData = JSON.stringify({ password: 'videopass123' });
     const r7 = await makeRequest(
@@ -226,7 +213,6 @@ async function runTest() {
     }
     console.log('PASS: Protected video unlocked and externalUrl granted.');
 
-    // TEST 8: Task 1 Regression Check (Download API)
     console.log('\n[TEST 8] Task 1 Regression Check (Download API for PYQ resource)...');
     const r8 = await makeRequest({
       hostname: 'localhost',
@@ -265,3 +251,4 @@ async function runTest() {
 }
 
 runTest();
+

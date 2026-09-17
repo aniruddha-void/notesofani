@@ -28,7 +28,7 @@ const iconMap = {
 
 export default function ResourceTypeBadge({ type }) {
   if (!OFFICIAL_RESOURCE_TYPES.includes(type)) {
-    return null; // Exclude non-official resource types
+    return null; 
   }
 
   const style = badgeStyles[type] || 'bg-slate-500/10 text-slate-300 border-slate-500/20';

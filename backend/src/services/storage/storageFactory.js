@@ -1,12 +1,6 @@
 const LocalStorageAdapter = require('./LocalStorageAdapter');
 const S3StorageAdapter = require('./S3StorageAdapter');
 
-/**
- * StorageFactory
- * Factory class returning the active storage service adapter based on process.env.STORAGE_PROVIDER.
- * Isolates storage implementation from business controllers.
- * Supports 'local', 's3', 'b2', 'backblaze', 'aws', and 'cloud' modes.
- */
 class StorageFactory {
   static getStorageService() {
     const provider = (process.env.STORAGE_PROVIDER || 'local').toLowerCase();
@@ -26,3 +20,4 @@ class StorageFactory {
 }
 
 module.exports = StorageFactory;
+

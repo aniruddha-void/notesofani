@@ -2,11 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-/**
- * Generates uppercase initials from a user's name
- * Example: "Aniruddha Bhandare" -> "AB"
- * Example: "Aniruddha" -> "A"
- */
+
 export function getInitials(name) {
   if (!name || typeof name !== 'string') return 'U';
   const cleanName = name.trim();
@@ -21,12 +17,6 @@ export function getInitials(name) {
   return cleanName.charAt(0).toUpperCase();
 }
 
-/**
- * UserAvatar Component
- * Handles valid image URLs, missing image URLs, and broken/expired image URLs gracefully.
- * Displays Google profile picture when available and valid; automatically switches
- * to local initials fallback if the image fails to load or is missing.
- */
 export default function UserAvatar({
   src,
   name,

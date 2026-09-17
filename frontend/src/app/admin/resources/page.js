@@ -17,7 +17,7 @@ export default function ManageResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
 
-  // Custom Delete Confirmation Modal state
+  
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -25,7 +25,7 @@ export default function ManageResourcesPage() {
   const fetchResources = async () => {
     try {
       setLoading(true);
-      // Fetch all resources for admin (both Published and Draft)
+    
       const res = await apiClient.get('/admin/resources?limit=50');
       if (res.data?.data?.resources) {
         setResources(res.data.data.resources);
@@ -198,7 +198,7 @@ export default function ManageResourcesPage() {
           )}
         </div>
 
-        {/* Professional In-App Delete Confirmation Modal */}
+       
         <Modal isOpen={deleteModalOpen} onClose={closeDeleteModal}>
           <div className="text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto text-rose-400">

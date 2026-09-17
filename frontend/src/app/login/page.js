@@ -28,7 +28,7 @@ export default function UserSignInPage() {
     return '/profile';
   };
 
-  // If already logged in, redirect
+
   useEffect(() => {
     if (user) {
       router.push(getSafeReturnTo());
@@ -173,7 +173,7 @@ export default function UserSignInPage() {
                   <span className="tracking-normal font-medium">{loading ? 'Signing in...' : 'Continue with Google'}</span>
                 </button>
 
-                {/* Invisible Google GIS rendered button iframe overlay */}
+                
                 <div
                   ref={gisContainerRef}
                   className="absolute inset-0 overflow-hidden pointer-events-auto flex items-center justify-center cursor-pointer z-10"

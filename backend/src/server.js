@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const connectDB = require('./config/db');
 
-// Route Imports
 const authRoutes = require('./routes/authRoutes');
 const resourceRoutes = require('./routes/resourceRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
@@ -19,10 +18,8 @@ const { verifySmtpConnection } = require('./config/mailer');
 
 const app = express();
 
-// Enable Trust Proxy for production HTTPS reverse proxies (Render, Vercel, Railway, Heroku, AWS ALB)
 app.set('trust proxy', 1);
 
-// Security Headers Middleware via Helmet
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -30,7 +27,6 @@ app.use(
   })
 );
 
-// CORS Configuration with Environment-based Origin Validation
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
   'http://127.0.0.1:3000',
@@ -58,7 +54,6 @@ app.use(cookieParser());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// Serve local static uploads directory for development storage with password protection access control
 const uploadsPath = path.join(__dirname, '../uploads');
 
 app.use('/uploads', async (req, res, next) => {
@@ -84,7 +79,6 @@ app.use('/uploads', async (req, res, next) => {
 
 app.use('/uploads', express.static(uploadsPath));
 
-// Root Welcome Endpoint
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -92,7 +86,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Safe Health Check Endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -101,7 +94,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount REST API Routes under /api/v1
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/resources', resourceRoutes);
 app.use('/api/v1/subjects', subjectRoutes);
@@ -109,7 +101,6 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/contact', contactRoutes);
 
-// Professional 404 Route Handler for Unknown Routes
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -117,7 +108,6 @@ app.use((req, res) => {
   });
 });
 
-// Centralized Express Error Handling Middleware
 app.use((err, req, res, next) => {
   const statusCode = err.status || err.statusCode || 500;
   console.error('[Global Error Handler]:', err.message || err);
@@ -131,9 +121,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 let server = null;
 
-/**
- * Start Server only AFTER MongoDB successfully connects.
- */
 async function startServer(maxRetries = 15, retryDelayMs = 300) {
   try {
     await connectDB();
@@ -176,9 +163,6 @@ async function startServer(maxRetries = 15, retryDelayMs = 300) {
   }
 }
 
-/**
- * Gracefully close HTTP server & MongoDB connection.
- */
 function gracefulShutdown(exitCode = 0) {
   if (server) {
     try {
@@ -200,7 +184,6 @@ function gracefulShutdown(exitCode = 0) {
   process.exit(exitCode);
 }
 
-// Signal Handlers for Graceful Shutdown
 const handleShutdown = () => gracefulShutdown(0);
 
 process.on('SIGINT', handleShutdown);
@@ -212,9 +195,9 @@ process.on('message', (msg) => {
   }
 });
 
-// Only start server if executed directly as main script
 if (require.main === module && process.env.NODE_ENV !== 'test') {
   startServer();
 }
 
 module.exports = app;
+

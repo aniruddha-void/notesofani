@@ -2,11 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const IStorageService = require('./IStorageService');
 
-/**
- * LocalStorageAdapter
- * Development storage adapter storing files on local server disk (/uploads).
- * Extends IStorageService.
- */
 class LocalStorageAdapter extends IStorageService {
   constructor(uploadBaseDir = path.join(__dirname, '../../../uploads')) {
     super();
@@ -16,12 +11,6 @@ class LocalStorageAdapter extends IStorageService {
     }
   }
 
-  /**
-   * Saves a file to local server disk
-   * @param {Object} file - Multer file object
-   * @param {string} folder - Subfolder name (default: 'pdf')
-   * @returns {Promise<{ url: string, key: string }>}
-   */
   async uploadFile(file, folder = 'pdf') {
     const targetDir = path.join(this.uploadBaseDir, folder);
     if (!fs.existsSync(targetDir)) {
@@ -47,11 +36,6 @@ class LocalStorageAdapter extends IStorageService {
     };
   }
 
-  /**
-   * Deletes a file from local server disk
-   * @param {string} keyOrUrl - File key or relative URL
-   * @returns {Promise<boolean>}
-   */
   async deleteFile(keyOrUrl) {
     if (!keyOrUrl) return false;
     const cleanPath = keyOrUrl.replace(/^\/uploads\//, '');
@@ -67,11 +51,6 @@ class LocalStorageAdapter extends IStorageService {
     return false;
   }
 
-  /**
-   * Retrieves a readable stream for a local file
-   * @param {string} keyOrUrl - File key or relative URL
-   * @returns {Promise<import('stream').Readable|null>}
-   */
   async getFileStream(keyOrUrl) {
     if (!keyOrUrl) return null;
     const cleanPath = keyOrUrl.replace(/^\/uploads\//, '');
@@ -88,3 +67,4 @@ class LocalStorageAdapter extends IStorageService {
 }
 
 module.exports = LocalStorageAdapter;
+

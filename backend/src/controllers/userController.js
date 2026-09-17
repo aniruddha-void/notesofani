@@ -4,10 +4,6 @@ const Resource = require('../models/Resource');
 const User = require('../models/User');
 const UserResourceActivity = require('../models/UserResourceActivity');
 
-/**
- * GET /api/v1/user/favorites (Authenticated User)
- * Gets favorited resources belonging only to the authenticated user.
- */
 const getFavorites = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -20,7 +16,6 @@ const getFavorites = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
-    // Filter out null resource references (if a resource was un-published or deleted)
     const validFavorites = favorites.filter((fav) => fav.resource !== null);
 
     return res.status(200).json({
@@ -35,16 +30,11 @@ const getFavorites = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/user/favorites/:resourceId (Authenticated User)
- * Adds a resource to user's favorites list. Uses unique compound index from Phase 2.
- */
 const addFavorite = async (req, res) => {
   try {
     const { resourceId } = req.params;
     const userId = req.user._id;
 
-    // Verify valid published resource
     const resource = await Resource.findOne({ _id: resourceId, published: true });
     if (!resource) {
       return res.status(404).json({
@@ -53,7 +43,6 @@ const addFavorite = async (req, res) => {
       });
     }
 
-    // Check existing favorite
     const existing = await Favorite.findOne({ user: userId, resource: resourceId });
     if (existing) {
       return res.status(200).json({
@@ -89,10 +78,6 @@ const addFavorite = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/v1/user/favorites/:resourceId (Authenticated User)
- * Removes a resource from user's favorites.
- */
 const removeFavorite = async (req, res) => {
   try {
     const { resourceId } = req.params;
@@ -112,10 +97,6 @@ const removeFavorite = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/user/downloads (Authenticated User)
- * Returns authenticated user's download history only.
- */
 const getDownloadHistory = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -141,10 +122,6 @@ const getDownloadHistory = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/user/views/:resourceId (Authenticated User)
- * Records or updates a resource view activity for the logged-in user.
- */
 const recordView = async (req, res) => {
   try {
     const { resourceId } = req.params;
@@ -181,15 +158,10 @@ const recordView = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/user/dashboard (Authenticated User)
- * Returns student learning overview statistics & recently viewed resources.
- */
 const getDashboard = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Real MongoDB metrics
     const [viewedCount, downloadsCount, favoritesCount, recentActivities] = await Promise.all([
       UserResourceActivity.countDocuments({ user: userId }),
       Download.countDocuments({ user: userId }),
@@ -203,7 +175,6 @@ const getDashboard = async (req, res) => {
         }),
     ]);
 
-    // Filter out null or unpublished resource references
     const validRecentlyViewed = recentActivities
       .filter((act) => act.resource && act.resource.published)
       .map((act) => ({
@@ -233,10 +204,6 @@ const getDashboard = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/user/profile (Authenticated User)
- * Returns user profile details.
- */
 const getProfile = async (req, res) => {
   return res.status(200).json({
     status: 'success',
@@ -244,10 +211,6 @@ const getProfile = async (req, res) => {
   });
 };
 
-/**
- * PUT /api/v1/user/profile (Authenticated User)
- * Updates user profile details (e.g. name, avatarUrl).
- */
 const updateProfile = async (req, res) => {
   try {
     const { name, avatarUrl, profileImage } = req.body;
@@ -289,3 +252,4 @@ module.exports = {
   getProfile,
   updateProfile,
 };
+

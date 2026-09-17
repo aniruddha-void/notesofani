@@ -6,17 +6,12 @@ const { generateToken, sendAuthCookie, clearAuthCookie, verifyToken } = require(
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-/**
- * POST /api/v1/auth/google
- * Authenticates Google OAuth ID token for normal users only.
- */
 const googleAuth = async (req, res) => {
   try {
     const { idToken, googleId, email, name, avatarUrl } = req.body;
 
     let payload = null;
 
-    // Verify Google ID token if provided
     if (idToken && process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID.includes('dummy')) {
       try {
         const ticket = await googleClient.verifyIdToken({
@@ -37,7 +32,7 @@ const googleAuth = async (req, res) => {
         });
       }
     } else if (googleId && email && name) {
-      // Development fallback when using direct OAuth payload
+
       payload = { googleId, email, name, avatarUrl: avatarUrl || '' };
     } else {
       return res.status(400).json({
@@ -46,10 +41,9 @@ const googleAuth = async (req, res) => {
       });
     }
 
-    // Find or create User in MongoDB
     let user = await User.findOne({ googleId: payload.googleId });
     if (!user) {
-      // Check if email exists
+
       user = await User.findOne({ email: payload.email });
       if (user) {
         user.googleId = payload.googleId;
@@ -67,10 +61,8 @@ const googleAuth = async (req, res) => {
       }
     }
 
-    // Generate User JWT token
     const token = generateToken({ id: user._id, role: 'user', email: user.email });
 
-    // Set secure HTTP-Only cookie named 'userToken'
     sendAuthCookie(res, 'userToken', token);
 
     return res.status(200).json({
@@ -95,10 +87,6 @@ const googleAuth = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/auth/admin/login
- * Email + Password login for administrators only.
- */
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -110,7 +98,6 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    // Find Admin document
     const admin = await Admin.findOne({ email: email.toLowerCase() });
     if (!admin) {
       return res.status(401).json({
@@ -119,7 +106,6 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    // Verify passwordHash with bcrypt
     const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -128,10 +114,8 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    // Generate Admin JWT token
     const token = generateToken({ id: admin._id, role: 'admin', email: admin.email });
 
-    // Set secure HTTP-Only cookie named 'adminToken'
     sendAuthCookie(res, 'adminToken', token);
 
     return res.status(200).json({
@@ -154,10 +138,6 @@ const adminLogin = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/auth/logout
- * Clears userToken and adminToken HTTP-Only cookies.
- */
 const logout = async (req, res) => {
   clearAuthCookie(res, 'userToken');
   clearAuthCookie(res, 'adminToken');
@@ -167,10 +147,6 @@ const logout = async (req, res) => {
   });
 };
 
-/**
- * GET /api/v1/auth/me
- * Returns currently authenticated user or admin based on HTTP-only cookie.
- */
 const getMe = async (req, res) => {
   try {
     const adminToken = req.cookies.adminToken;
@@ -231,3 +207,4 @@ module.exports = {
   logout,
   getMe,
 };
+

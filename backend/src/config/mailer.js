@@ -1,8 +1,5 @@
 const nodemailer = require('nodemailer');
 
-/**
- * Creates Nodemailer transporter using environment variables
- */
 const createTransporter = () => {
   const host = process.env.SMTP_HOST || 'smtp.ethereal.email';
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
@@ -10,7 +7,7 @@ const createTransporter = () => {
   const pass = process.env.SMTP_PASS;
 
   if (!user || user.includes('your_email')) {
-    // Return dummy transporter for local development if credentials not set
+
     return {
       isSimulated: true,
       verify: async () => true,
@@ -38,9 +35,6 @@ const createTransporter = () => {
   });
 };
 
-/**
- * Verifies SMTP connection using Nodemailer transporter.verify()
- */
 const verifySmtpConnection = async () => {
   const host = process.env.SMTP_HOST || 'smtp.ethereal.email';
   const port = parseInt(process.env.SMTP_PORT || '587', 10);

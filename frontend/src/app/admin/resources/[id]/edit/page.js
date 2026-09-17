@@ -255,7 +255,7 @@ export default function EditResourcePage({ params }) {
                 ></textarea>
               </div>
 
-              {/* Password Protection Option */}
+
               <div className="bg-obsidian-950/60 border border-white/10 rounded-xl p-4 space-y-4">
                 <div className="flex items-center gap-3">
                   <input
@@ -302,7 +302,7 @@ export default function EditResourcePage({ params }) {
                 )}
               </div>
 
-              {/* Dynamic Content Field Section */}
+
               {isFileBased && (
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">

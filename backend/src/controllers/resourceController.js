@@ -7,9 +7,6 @@ const StorageFactory = require('../services/storage/storageFactory');
 const bcrypt = require('bcryptjs');
 const { generateToken, verifyToken } = require('../utils/jwt');
 
-/**
- * Helper to extract authenticated user token from request
- */
 const getAuthenticatedUser = (req) => {
   if (req.user) return req.user;
   const token =
@@ -24,9 +21,6 @@ const getAuthenticatedUser = (req) => {
   }
 };
 
-/**
- * Helper to check if request has temporary access authorization for a protected resource
- */
 const hasResourceAccess = (req, resourceId) => {
   if (req.admin) return true;
   const cookieName = `res_access_${resourceId}`;
@@ -43,16 +37,10 @@ const hasResourceAccess = (req, resourceId) => {
   }
 };
 
-/**
- * GET /api/v1/resources (Public)
- * Fetches published resources with search, filtering (subject, type), and pagination.
- * Draft resources are NEVER exposed.
- */
 const getResources = async (req, res) => {
   try {
     const { search, subject, type, page = 1, limit = 12 } = req.query;
 
-    // Strict filter: Public queries return Published resources ONLY
     const filter = { published: true };
 
     if (subject) {
@@ -79,7 +67,6 @@ const getResources = async (req, res) => {
 
     const total = await Resource.countDocuments(filter);
 
-    // Check Google Login (Layer 1) & per-resource password (Layer 2)
     const authenticatedUser = getAuthenticatedUser(req);
     const isLoggedIn = Boolean(authenticatedUser);
 
@@ -120,10 +107,6 @@ const getResources = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/resources/:id (Public)
- * Fetches single published resource detail & increments view count.
- */
 const getResourceById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -138,7 +121,6 @@ const getResourceById = async (req, res) => {
       });
     }
 
-    // Increment view count asynchronously
     resource.viewsCount += 1;
     await resource.save();
 
@@ -170,9 +152,6 @@ const getResourceById = async (req, res) => {
   }
 };
 
-/**
- * Helper to validate HTTP/HTTPS URLs.
- */
 const isValidHttpUrl = (str) => {
   if (!str || typeof str !== 'string') return false;
   const trimmed = str.trim();
@@ -184,10 +163,6 @@ const isValidHttpUrl = (str) => {
   }
 };
 
-/**
- * POST /api/v1/resources (Admin Only)
- * Creates a new resource.
- */
 const createResource = async (req, res) => {
   try {
     const {
@@ -222,7 +197,6 @@ const createResource = async (req, res) => {
       });
     }
 
-    // Check subject existence
     const targetSubjectId = subjectId || req.body.subject;
     const subjectDoc = await Subject.findById(targetSubjectId);
     if (!subjectDoc) {
@@ -235,7 +209,6 @@ const createResource = async (req, res) => {
     const isPublished = published !== undefined ? Boolean(published) : status === 'Published';
     const isFileBased = targetType === 'PDF' || targetType === 'PYQ';
 
-    // Password Protection validation
     const isProtected = passwordProtected === 'true' || passwordProtected === true;
     let hashedPassword = null;
 
@@ -272,7 +245,7 @@ const createResource = async (req, res) => {
         fileSize = req.body.fileSize || 1024;
       }
     } else {
-      // URL-based type (Video, Google Drive, Useful Link)
+
       const rawUrl = (externalUrl !== undefined ? externalUrl : embedVideoUrl) || '';
       const trimmedUrl = rawUrl.trim();
 
@@ -325,10 +298,6 @@ const createResource = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/v1/resources/:id (Admin Only)
- * Updates an existing resource by Resource ID.
- */
 const updateResource = async (req, res) => {
   try {
     const { id } = req.params;
@@ -379,7 +348,6 @@ const updateResource = async (req, res) => {
     if (published !== undefined) resource.published = Boolean(published);
     else if (status !== undefined) resource.published = status === 'Published';
 
-    // Handle Password Protection Updates
     if (passwordProtected !== undefined) {
       const isProtected = passwordProtected === 'true' || passwordProtected === true;
       if (!isProtected) {
@@ -401,7 +369,7 @@ const updateResource = async (req, res) => {
             message: 'A password is required when enabling protection.',
           });
         }
-        // If password is empty/omitted and resource already has a passwordHash, keep existing hash.
+
       }
     }
 
@@ -411,7 +379,7 @@ const updateResource = async (req, res) => {
     if (isFileBased) {
       resource.resourceType = targetType;
       resource.sourceType = 'upload';
-      resource.externalUrl = ''; // Clear obsolete URL content
+      resource.externalUrl = '';
 
       if (req.file) {
         const oldFileUrl = resource.fileUrl;
@@ -421,7 +389,6 @@ const updateResource = async (req, res) => {
         resource.fileUrl = uploadResult.url;
         resource.fileSize = req.file.size || 0;
 
-        // Clean up old file AFTER successful upload and assignment
         if (oldFileUrl) {
           await storageService.deleteFile(oldFileUrl).catch((err) => {
             console.error('[Storage Cleanup Non-Fatal Error]:', err);
@@ -436,7 +403,7 @@ const updateResource = async (req, res) => {
         }
       }
     } else {
-      // URL-based type (Video, Google Drive, Useful Link)
+
       const rawUrl = (externalUrl !== undefined ? externalUrl : embedVideoUrl) || '';
       const trimmedUrl = rawUrl ? rawUrl.trim() : resource.externalUrl;
 
@@ -447,7 +414,6 @@ const updateResource = async (req, res) => {
         });
       }
 
-      // If switching from file-based to URL-based, delete old file from storage
       if (resource.fileUrl) {
         await storageService.deleteFile(resource.fileUrl).catch((err) => {
           console.error('[Storage Cleanup Non-Fatal Error]:', err);
@@ -486,10 +452,6 @@ const updateResource = async (req, res) => {
   }
 };
 
-/**
- * PATCH /api/v1/resources/:id/status (Admin Only)
- * Quick status toggle: Draft <-> Published.
- */
 const updateResourceStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -526,10 +488,6 @@ const updateResourceStatus = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/v1/resources/:id (Admin Only)
- * Deletes resource from MongoDB & deletes uploaded file via StorageFactory.
- */
 const deleteResource = async (req, res) => {
   try {
     const { id } = req.params;
@@ -561,16 +519,11 @@ const deleteResource = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/resources/:id/verify-password (Public / User)
- * Verifies password for a protected resource and issues temporary access authorization.
- */
 const verifyResourcePassword = async (req, res) => {
   try {
     const { id } = req.params;
     const { password } = req.body || {};
 
-    // Require Google Authentication (Layer 1) before per-resource password verification (Layer 2)
     const authenticatedUser = getAuthenticatedUser(req);
     if (!authenticatedUser) {
       return res.status(401).json({
@@ -616,7 +569,6 @@ const verifyResourcePassword = async (req, res) => {
       });
     }
 
-    // Generate temporary resource access token (valid for 4 hours)
     const token = generateToken({ resourceId: resource._id.toString(), accessGranted: true });
 
     const cookieName = `res_access_${resource._id.toString()}`;
@@ -626,7 +578,7 @@ const verifyResourcePassword = async (req, res) => {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 4 * 60 * 60 * 1000, // 4 hours
+      maxAge: 4 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -648,11 +600,6 @@ const verifyResourcePassword = async (req, res) => {
   }
 };
 
-/**
- * GET/POST /api/v1/resources/:id/download (Authenticated User)
- * Verifies authorization, serves the actual binary resource file attachment,
- * and records successful download history in MongoDB.
- */
 const recordDownload = async (req, res) => {
   try {
     const { id } = req.params;
@@ -684,14 +631,12 @@ const recordDownload = async (req, res) => {
         });
       }
 
-      // Record Download entry ONLY after authorization and file existence succeed
       await Download.create({
         user: userId,
         resource: resource._id,
         downloadedAt: new Date(),
       });
 
-      // Increment downloadsCount
       resource.downloadsCount += 1;
       await resource.save();
 
@@ -704,7 +649,7 @@ const recordDownload = async (req, res) => {
       res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
       return fileStream.pipe(res);
     } else if (resource.externalUrl) {
-      // Record Download entry for external link resource
+
       await Download.create({
         user: userId,
         resource: resource._id,
@@ -737,10 +682,6 @@ const recordDownload = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/admin/resources (Admin Only)
- * Fetches ALL resources (both Published AND Draft) for admin management.
- */
 const getAllResourcesAdmin = async (req, res) => {
   try {
     const { search, subject, type, page = 1, limit = 50 } = req.query;
@@ -799,10 +740,6 @@ const getAllResourcesAdmin = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/resources/:id/file (Authenticated User)
- * Streams/serves the actual binary PDF resource file for inline viewing with proper credentials.
- */
 const streamResourceFile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -879,5 +816,4 @@ module.exports = {
   streamResourceFile,
   hasResourceAccess,
 };
-
 

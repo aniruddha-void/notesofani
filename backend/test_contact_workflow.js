@@ -6,7 +6,6 @@ const connectDB = require('./src/config/db');
 const ContactMessage = require('./src/models/ContactMessage');
 const { submitContactForm } = require('./src/controllers/contactController');
 
-// Mock response builder
 function createMockRes() {
   return {
     statusCode: 200,
@@ -29,7 +28,7 @@ async function runTests() {
   const testEmailPrefix = 'test_contact_integration_';
 
   try {
-    // 1. Missing Name
+
     {
       const req = {
         body: {
@@ -47,7 +46,6 @@ async function runTests() {
       console.log('✓ Test 1 Passed: Missing name returns 400 validation error');
     }
 
-    // 2. Invalid Email
     {
       const req = {
         body: {
@@ -65,7 +63,6 @@ async function runTests() {
       console.log('✓ Test 2 Passed: Invalid email returns 400 validation error');
     }
 
-    // 3. Missing Message
     {
       const req = {
         body: {
@@ -83,7 +80,6 @@ async function runTests() {
       console.log('✓ Test 3 Passed: Missing message returns 400 validation error');
     }
 
-    // 4. Valid Submission with Custom Subject
     let createdMsgId1 = null;
     {
       const req = {
@@ -119,7 +115,6 @@ async function runTests() {
       console.log('✓ Test 4 Passed: Valid submission creates MongoDB document with correct trimmed fields & status');
     }
 
-    // 5. Optional Subject Defaults to "General Inquiry"
     let createdMsgId2 = null;
     {
       const req = {
@@ -146,14 +141,13 @@ async function runTests() {
       console.log('✓ Test 5 Passed: Optional subject correctly defaults to "General Inquiry"');
     }
 
-    // Cleanup test documents
     await ContactMessage.deleteMany({ email: { $regex: new RegExp(`^${testEmailPrefix}`, 'i') } });
     console.log('✓ Test Cleanup: Removed all test ContactMessage records from MongoDB');
 
     console.log('=== ALL CONTACT FORM INTEGRATION TESTS PASSED SUCCESSFULLY ===');
   } catch (err) {
     console.error('❌ Test Suite Failed:', err);
-    // Cleanup on error
+
     await ContactMessage.deleteMany({ email: { $regex: new RegExp(`^${testEmailPrefix}`, 'i') } }).catch(() => {});
     process.exit(1);
   } finally {
@@ -162,3 +156,4 @@ async function runTests() {
 }
 
 runTests();
+

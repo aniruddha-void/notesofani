@@ -19,7 +19,7 @@
   }
 }
 
-/* Custom Utilities */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -45,7 +45,7 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Disable browser-native password reveal & clear buttons to prevent duplicate eye icons */
+
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
 input[type="password"]::-webkit-contacts-auto-fill-button,

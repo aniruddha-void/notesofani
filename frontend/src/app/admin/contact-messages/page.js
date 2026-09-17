@@ -12,16 +12,16 @@ export default function AdminContactMessagesPage() {
   const { admin, loading: authLoading } = useAuth();
   const [messages, setMessages] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
-  const [activeStatus, setActiveStatus] = useState('All'); // 'All' | 'Unread' | 'Read' | 'Resolved'
+  const [activeStatus, setActiveStatus] = useState('All'); 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // View Message Modal State
+  
   const [viewMessage, setViewMessage] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
 
-  // Delete Confirmation Modal State
+ 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -62,7 +62,7 @@ export default function AdminContactMessagesPage() {
   const handleOpenView = (msg) => {
     setViewMessage(msg);
     setIsViewModalOpen(true);
-    // If opening an Unread message, auto-mark it as Read on backend silently
+   
     if (msg.status === 'Unread' || msg.status === 'UNREAD') {
       handleUpdateStatus(msg._id, 'Read', false);
     }
@@ -123,7 +123,6 @@ export default function AdminContactMessagesPage() {
     }
   };
 
-  // Close modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -192,7 +191,7 @@ export default function AdminContactMessagesPage() {
 
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
+          
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.06]">
             <div>
               <h1 className="text-3xl font-bold text-white tracking-tight">Contact Messages</h1>
@@ -201,7 +200,7 @@ export default function AdminContactMessagesPage() {
               </p>
             </div>
 
-            {/* Counter Badge */}
+           
             <div className="self-start md:self-auto px-4 py-2 bg-obsidian-900 border border-white/10 rounded-xl flex items-center gap-2">
               <span className="material-symbols-outlined text-sky-400 text-[20px]">mail</span>
               <span className="text-xs text-slate-400 font-medium">Total Messages:</span>
@@ -209,9 +208,9 @@ export default function AdminContactMessagesPage() {
             </div>
           </div>
 
-          {/* Filters & Search Row */}
+          
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            {/* Status Filter Tabs */}
+       
             <div className="flex items-center gap-2 p-1 bg-obsidian-900 border border-white/[0.06] rounded-xl self-start">
               {['All', 'Unread', 'Read', 'Resolved'].map((tab) => (
                 <button
@@ -228,7 +227,6 @@ export default function AdminContactMessagesPage() {
               ))}
             </div>
 
-            {/* Search Input */}
             <div className="relative max-w-md w-full md:w-80">
               <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
                 search
@@ -251,7 +249,6 @@ export default function AdminContactMessagesPage() {
             </div>
           </div>
 
-          {/* Message Directory Table */}
           {loading ? (
             <LoadingState message="Fetching contact messages..." />
           ) : messages.length === 0 ? (
@@ -341,7 +338,6 @@ export default function AdminContactMessagesPage() {
         </div>
       </main>
 
-      {/* View Message Modal */}
       {isViewModalOpen && viewMessage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-in fade-in duration-150"
@@ -351,7 +347,7 @@ export default function AdminContactMessagesPage() {
             className="bg-obsidian-900 border border-white/10 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+           
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-6">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-sky-400 text-[22px]">mail</span>
@@ -365,7 +361,7 @@ export default function AdminContactMessagesPage() {
               </button>
             </div>
 
-            {/* Sender Meta Box */}
+          
             <div className="p-4 rounded-xl bg-obsidian-950 border border-white/[0.04] mb-6 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sender Info</span>
@@ -398,7 +394,7 @@ export default function AdminContactMessagesPage() {
               </div>
             </div>
 
-            {/* Message Body */}
+            
             <div className="mb-6">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Message Body</h4>
               <div className="p-4 rounded-xl bg-obsidian-950 border border-white/[0.04] text-slate-200 text-sm whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">
@@ -406,7 +402,7 @@ export default function AdminContactMessagesPage() {
               </div>
             </div>
 
-            {/* Actions Footer */}
+           
             <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2">
                 {(viewMessage.status || '').toUpperCase() !== 'READ' && (
@@ -440,7 +436,7 @@ export default function AdminContactMessagesPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal (In-App Modal) */}
+     
       {isDeleteModalOpen && deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-in fade-in duration-150"

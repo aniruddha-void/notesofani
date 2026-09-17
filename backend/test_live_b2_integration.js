@@ -16,7 +16,6 @@ const bcrypt = require('bcryptjs');
 async function runLiveB2Test() {
   console.log('--- STARTING LIVE BACKBLAZE B2 INTEGRATION TEST ---');
 
-  // Connect to MongoDB
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
@@ -49,7 +48,7 @@ async function runLiveB2Test() {
   let createdResourceId = null;
 
   try {
-    // 1. Verify StorageFactory Provider Selection
+
     const activeProvider = process.env.STORAGE_PROVIDER || 'local';
     console.log(`[INFO] Current STORAGE_PROVIDER: ${activeProvider}`);
 
@@ -61,7 +60,6 @@ async function runLiveB2Test() {
       throw new Error(`StorageFactory failed to select S3StorageAdapter for provider: ${activeProvider}`);
     }
 
-    // 2. Verify B2 Connection & Config (Without printing secrets)
     if (storageAdapter.bucketName && storageAdapter.endpoint && storageAdapter.s3Client) {
       results.b2Connection = true;
       console.log('✓ 2. Backblaze B2 S3 Client successfully initialized with configured bucket and endpoint.');
@@ -69,7 +67,6 @@ async function runLiveB2Test() {
       throw new Error('Backblaze B2 S3 Client failed to initialize. Check environment configuration.');
     }
 
-    // Prepare Test Subject and Test User
     testSubject = await Subject.findOne({ code: 'B2TEST101' });
     if (!testSubject) {
       testSubject = await Subject.create({
@@ -91,7 +88,6 @@ async function runLiveB2Test() {
       });
     }
 
-    // 3. Perform PDF Upload to Backblaze B2
     const samplePdfBuffer = Buffer.from(
       '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000052 00000 n\n0000000101 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n178\n%%EOF\n'
     );
@@ -112,7 +108,6 @@ async function runLiveB2Test() {
       throw new Error('PDF upload to Backblaze B2 returned empty result.');
     }
 
-    // Verify B2 Object Streamability
     const uploadedStream = await storageAdapter.getFileStream(uploadResult.url);
     if (uploadedStream) {
       results.b2ObjectCreated = true;
@@ -122,7 +117,6 @@ async function runLiveB2Test() {
       throw new Error('Uploaded object stream could not be fetched from Backblaze B2 bucket.');
     }
 
-    // Save MongoDB Resource Record
     const newResource = await Resource.create({
       title: 'Task 9 B2 Live Test PDF',
       description: 'Live test PDF for Backblaze B2 integration verification',
@@ -142,14 +136,12 @@ async function runLiveB2Test() {
       console.log('✓ 3C. MongoDB saved object reference URL and file metadata.');
     }
 
-    // Verify MongoDB does NOT contain binary data
     const rawDoc = await Resource.findById(createdResourceId).lean();
     if (!rawDoc.buffer && !rawDoc.fileData && typeof rawDoc.fileUrl === 'string') {
       results.mongoNoBinary = true;
       console.log('✓ 3D. Verified MongoDB stores only object reference/metadata and NO binary file data.');
     }
 
-    // 4. Test Authenticated Stream & Download Flow
     const fetchedStream = await storageAdapter.getFileStream(newResource.fileUrl);
     if (fetchedStream) {
       results.authUserAccess = true;
@@ -157,7 +149,6 @@ async function runLiveB2Test() {
       console.log('✓ 4A. Authorized PDF stream retrieved successfully via storage abstraction.');
     }
 
-    // Record Download
     const downloadEntry = await Download.create({
       user: testUser._id,
       resource: newResource._id,
@@ -171,33 +162,29 @@ async function runLiveB2Test() {
       console.log('✓ 4B. Resource download activity recorded successfully in MongoDB.');
     }
 
-    // 5. Test Password Protection & Authorization
     const testPassword = 'TestPassword123!';
     const hashedPassword = await bcrypt.hash(testPassword, 10);
     newResource.passwordProtected = true;
     newResource.passwordHash = hashedPassword;
     await newResource.save();
 
-    // Verify unauthorized access check
     const isProtected = newResource.passwordProtected;
     if (isProtected) {
       results.passwordProtectionEnforced = true;
       console.log('✓ 5A. Password protection state enforced on resource.');
     }
 
-    // Verify password check matching
     const passMatch = await bcrypt.compare(testPassword, newResource.passwordHash);
     if (passMatch) {
       results.passwordProtectionGranted = true;
       console.log('✓ 5B. Valid password comparison grants access authorization.');
     }
 
-    // Test Private Bucket Direct HTTP Access (Should be forbidden / non-public without backend auth)
     try {
       const https = require('https');
       const httpCheckPromise = new Promise((resolve) => {
         https.get(uploadResult.url, (res) => {
-          // B2 private bucket returns 403 Forbidden or 400
+
           if (res.statusCode === 403 || res.statusCode === 400 || res.statusCode === 401) {
             resolve(true);
           } else {
@@ -215,7 +202,6 @@ async function runLiveB2Test() {
       results.b2PrivateAccessDenied = true;
     }
 
-    // 6. Test File Replacement
     const secondPdfBuffer = Buffer.from(
       '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000052 00000 n\n0000000101 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n178\n%%EOF\n% REPLACEMENT TEST DOCUMENT CONTENT\n'
     );
@@ -239,7 +225,6 @@ async function runLiveB2Test() {
       results.pdfReplacementMongoUpdated = true;
       console.log('✓ 6A. New replacement file uploaded to B2 and MongoDB record updated.');
 
-      // Clean up old file
       await storageAdapter.deleteFile(oldUrl);
       const oldStreamCheck = await storageAdapter.getFileStream(oldUrl);
       if (!oldStreamCheck) {
@@ -248,7 +233,6 @@ async function runLiveB2Test() {
       }
     }
 
-    // 7. Test Deletion & Cleanup
     const currentUrl = newResource.fileUrl;
     await storageAdapter.deleteFile(currentUrl);
     await Resource.findByIdAndDelete(newResource._id);
@@ -265,7 +249,6 @@ async function runLiveB2Test() {
     }
     console.log('✓ 7. Test resource deleted from MongoDB and B2 object removed.');
 
-    // 8. Test Local Storage Regression
     process.env.STORAGE_PROVIDER = 'local';
     const localStorageAdapter = StorageFactory.getStorageService();
     if (localStorageAdapter instanceof LocalStorageAdapter) {
@@ -281,10 +264,9 @@ async function runLiveB2Test() {
         }
       }
     }
-    // Restore STORAGE_PROVIDER
+
     process.env.STORAGE_PROVIDER = activeProvider;
 
-    // 9. Security Audit Check
     const frontendDir = path.join(__dirname, '../frontend');
     const frontendEnvLocalPath = path.join(frontendDir, '.env.local');
     let hasB2InFrontend = false;
@@ -304,7 +286,7 @@ async function runLiveB2Test() {
   } catch (error) {
     console.error('[LIVE B2 TEST FAILURE]:', error.message || error);
   } finally {
-    // Cleanup temporary subject and user
+
     if (testSubject) {
       await Subject.findByIdAndDelete(testSubject._id);
     }
@@ -329,3 +311,4 @@ async function runLiveB2Test() {
 }
 
 runLiveB2Test();
+

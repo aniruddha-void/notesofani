@@ -14,7 +14,6 @@ async function migrateNotesType() {
     await mongoose.connect(mongoUri);
     console.log('Connected to MongoDB Atlas for migration check...');
 
-    // Find any resources directly with resourceType === 'Notes' bypassing enum validation
     const collection = mongoose.connection.db.collection('resources');
     const notesResources = await collection.find({ resourceType: 'Notes' }).toArray();
 
@@ -40,3 +39,4 @@ async function migrateNotesType() {
 }
 
 migrateNotesType();
+

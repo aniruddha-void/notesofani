@@ -20,7 +20,7 @@ export default function ManageSubjectsPage() {
   const [submittingEdit, setSubmittingEdit] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
 
-  // Custom Subject Delete Confirmation Modal State
+
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
   const [deletingSubject, setDeletingSubject] = useState(false);
@@ -161,7 +161,7 @@ export default function ManageSubjectsPage() {
           onClose={() => setToast({ ...toast, visible: false })}
         />
 
-        {/* Modal for Creating New Subject */}
+     
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -191,7 +191,7 @@ export default function ManageSubjectsPage() {
           </form>
         </Modal>
 
-        {/* Modal for Editing Existing Subject */}
+      
         <Modal
           isOpen={isEditModalOpen}
           onClose={() => {
@@ -302,7 +302,7 @@ export default function ManageSubjectsPage() {
           )}
         </div>
 
-        {/* Professional In-App Delete Subject Confirmation Modal */}
+        
         <Modal isOpen={deleteModalOpen} onClose={closeDeleteModal}>
           <div className="text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto text-rose-400">

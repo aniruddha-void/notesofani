@@ -18,7 +18,6 @@ async function testLmsSubjectExperience() {
     const testSubjectName = 'Advance Java';
     await Subject.deleteMany({ name: testSubjectName });
 
-    // 1. Create ONE Subject ("Advance Java")
     console.log('Step 1: Creating ONE Subject ("Advance Java")...');
     const subject = await Subject.create({
       name: testSubjectName,
@@ -27,7 +26,6 @@ async function testLmsSubjectExperience() {
     });
     console.log(`✓ Subject created: "${subject.name}" (ID: ${subject._id})`);
 
-    // 2. Create 5 distinct Resources for all 5 canonical types under Advance Java
     console.log('\nStep 2: Creating 5 Resources (PDF, Video, PYQ, Google Drive, Useful Link) under Advance Java...');
 
     const res1 = await Resource.create({
@@ -89,7 +87,6 @@ async function testLmsSubjectExperience() {
     console.log(`  4. ${res4.title} (${res4.resourceType})`);
     console.log(`  5. ${res5.title} (${res5.resourceType})`);
 
-    // 3. Database Count Assertions
     console.log('\nStep 3: Database Uniqueness & Count Assertions...');
     const subjectCount = await Subject.countDocuments({ name: testSubjectName });
     const resourceCount = await Resource.countDocuments({ subject: subject._id });
@@ -102,7 +99,6 @@ async function testLmsSubjectExperience() {
     }
     console.log('✓ VERIFIED: Exactly 1 Subject document created without duplicates!');
 
-    // 4. Test Filtering Scenarios
     console.log('\nStep 4: Testing Type Filtering under "Advance Java"...');
 
     const pdfFilter = await Resource.find({ subject: subject._id, resourceType: 'PDF' });
@@ -135,7 +131,6 @@ async function testLmsSubjectExperience() {
     }
     console.log('✓ VERIFIED: All 5 resource types filter correctly under "Advance Java"!');
 
-    // Cleanup
     console.log('\nCleaning up test documents...');
     await Resource.deleteMany({ subject: subject._id });
     await Subject.deleteOne({ _id: subject._id });
@@ -150,3 +145,4 @@ async function testLmsSubjectExperience() {
 }
 
 testLmsSubjectExperience();
+

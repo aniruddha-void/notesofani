@@ -15,11 +15,9 @@ async function testDbmsMultiResourceWorkflow() {
     await mongoose.connect(mongoUri);
     console.log('=== STARTING MANDATORY DBMS MULTI-RESOURCE WORKFLOW TEST ===\n');
 
-    // Clean up previous test subject if exists
     const testSubjectName = 'DBMS Architecture Verification Test';
     await Subject.deleteMany({ name: testSubjectName });
 
-    // Step 1: Create ONE Subject ("DBMS Architecture Verification Test")
     console.log('Step 1: Creating Subject...');
     const subject = await Subject.create({
       name: testSubjectName,
@@ -28,7 +26,6 @@ async function testDbmsMultiResourceWorkflow() {
     });
     console.log(`✓ Subject created: "${subject.name}" | ID: ${subject._id}`);
 
-    // Step 2: Create 5 distinct Resources referencing the SAME Subject ID
     console.log('\nStep 2: Creating 5 distinct Resources under the SAME Subject ID...');
 
     const res1 = await Resource.create({
@@ -90,7 +87,6 @@ async function testDbmsMultiResourceWorkflow() {
     console.log(`  - ${res4.title} (${res4.resourceType}) ID: ${res4._id}`);
     console.log(`  - ${res5.title} (${res5.resourceType}) ID: ${res5._id}`);
 
-    // Step 3: Verify Database Counts
     console.log('\nStep 3: Verifying Database Counts...');
     const subjectCount = await Subject.countDocuments({ _id: subject._id });
     const resourceCount = await Resource.countDocuments({ subject: subject._id });
@@ -103,7 +99,6 @@ async function testDbmsMultiResourceWorkflow() {
     }
     console.log('✓ VERIFIED: Exactly 1 Subject document supports 5 independent Resource documents!');
 
-    // Step 4: Edit ONLY Resource 1 (DBMS PYQ)
     console.log('\nStep 4: Editing ONLY Resource 1 (DBMS PYQ)...');
     res1.title = 'DBMS 2024 PYQ Updated';
     await res1.save();
@@ -121,7 +116,6 @@ async function testDbmsMultiResourceWorkflow() {
     }
     console.log('✓ VERIFIED: Editing Resource 1 mutated ONLY Resource 1. Other resources remain untouched.');
 
-    // Step 5: Delete ONLY Resource 1 (DBMS 2024 PYQ Updated)
     console.log('\nStep 5: Deleting ONLY Resource 1...');
     await Resource.findByIdAndDelete(res1._id);
 
@@ -138,7 +132,6 @@ async function testDbmsMultiResourceWorkflow() {
     }
     console.log('✓ VERIFIED: Deleting Resource 1 removed ONLY Resource 1. Subject and 4 remaining resources are fully intact.');
 
-    // Step 6: Create another resource of the SAME type (PYQ) under DBMS
     console.log('\nStep 6: Creating another resource of the SAME type (PYQ 2026) under DBMS...');
     const res6 = await Resource.create({
       title: 'DBMS PYQ 2026',
@@ -163,7 +156,6 @@ async function testDbmsMultiResourceWorkflow() {
     }
     console.log('✓ VERIFIED: Multiple resources of the SAME type (e.g. multiple PYQs) are fully supported under 1 Subject!');
 
-    // Cleanup test data
     console.log('\nCleaning up test documents...');
     await Resource.deleteMany({ subject: subject._id });
     await Subject.deleteOne({ _id: subject._id });
@@ -178,3 +170,4 @@ async function testDbmsMultiResourceWorkflow() {
 }
 
 testDbmsMultiResourceWorkflow();
+

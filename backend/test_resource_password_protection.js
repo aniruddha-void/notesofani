@@ -47,7 +47,7 @@ async function runPasswordProtectionTests() {
   let testUser = null;
 
   try {
-    // Ensure test subject exists
+
     testSubject = await Subject.findOne({ name: 'Java Programming' });
     if (!testSubject) {
       testSubject = await Subject.create({
@@ -57,7 +57,6 @@ async function runPasswordProtectionTests() {
       });
     }
 
-    // Ensure test user exists
     testUser = await User.findOne({ email: 'testuser_pwd@example.com' });
     if (!testUser) {
       testUser = await User.create({
@@ -67,7 +66,6 @@ async function runPasswordProtectionTests() {
       });
     }
 
-    // 1. Create Unprotected Resource
     let unprotectedId = null;
     {
       const req = {
@@ -97,7 +95,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 1 Passed: Unprotected resource created correctly without password hash');
     }
 
-    // 2. Create Protected Resource without password (should fail 400)
     {
       const req = {
         admin: { _id: new mongoose.Types.ObjectId() },
@@ -119,7 +116,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 2 Passed: Creating protected resource without password returns 400 validation error');
     }
 
-    // 3. Create Protected Resource with password "NotesofAni@2026"
     let protectedId = null;
     const initialPassword = 'NotesofAni@2026';
     {
@@ -148,13 +144,11 @@ async function runPasswordProtectionTests() {
         throw new Error('[Test Fail 3] passwordProtected or passwordHash missing in MongoDB');
       }
 
-      // Verify bcrypt hash works
       const isMatch = await bcrypt.compare(initialPassword, dbDoc.passwordHash);
       if (!isMatch) {
         throw new Error('[Test Fail 3] Password hash in MongoDB does not match initial password');
       }
 
-      // Verify passwordHash is NOT in returned JSON
       if (res.body?.data?.resource?.passwordHash) {
         throw new Error('[Test Fail 3] CRITICAL SECURITY ISSUE: passwordHash was leaked in response body!');
       }
@@ -162,7 +156,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 3 Passed: Protected resource created with bcrypt hash (passwordHash hidden from API response)');
     }
 
-    // 4. GET /api/v1/resources/:id on Protected Resource WITHOUT access cookie (should hide externalUrl)
     {
       const req = {
         params: { id: protectedId },
@@ -183,7 +176,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 4 Passed: Locked resource details hide sensitive URLs and return isUnlocked=false');
     }
 
-    // 5. Verify Password with INCORRECT password
     {
       const req = {
         params: { id: protectedId },
@@ -199,7 +191,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 5 Passed: Incorrect password returns 401 access denied');
     }
 
-    // 6. Verify Password with CORRECT password ("NotesofAni@2026")
     let accessCookieValue = null;
     {
       const req = {
@@ -226,7 +217,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 6 Passed: Correct password grants temporary access and sets HTTP-only access cookie');
     }
 
-    // 7. GET /api/v1/resources/:id WITH access cookie & user login (should expose externalUrl)
     {
       const req = {
         params: { id: protectedId },
@@ -248,7 +238,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 7 Passed: Resource detail with valid access cookie returns unlocked content');
     }
 
-    // 8. Download Endpoint on Protected Resource WITHOUT access cookie (should return 403)
     {
       const req = {
         params: { id: protectedId },
@@ -266,7 +255,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 8 Passed: Downloading protected resource without password authorization returns 403 Forbidden');
     }
 
-    // 9. Download Endpoint on Protected Resource WITH access cookie (should succeed 200)
     {
       const req = {
         params: { id: protectedId },
@@ -284,7 +272,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 9 Passed: Downloading protected resource with valid access cookie succeeds');
     }
 
-    // 10. Metadata-only Edit (keeps protection & existing password)
     {
       const req = {
         params: { id: protectedId },
@@ -292,7 +279,7 @@ async function runPasswordProtectionTests() {
         body: {
           title: `${testTitlePrefix}PROTECTED_EDITED_TITLE`,
           passwordProtected: true,
-          password: '', // Blank password
+          password: '',
         },
       };
       const res = createMockRes();
@@ -315,7 +302,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 10 Passed: Metadata-only edit preserves password protection & existing passwordHash');
     }
 
-    // 11. Change Password to "NewSecret@2026"
     const newPassword = 'NewSecret@2026';
     {
       const req = {
@@ -333,7 +319,6 @@ async function runPasswordProtectionTests() {
         throw new Error(`[Test Fail 11] Password update failed with code ${res.statusCode}`);
       }
 
-      // Old password should fail
       const oldReq = { params: { id: protectedId }, user: testUser, body: { password: initialPassword } };
       const oldRes = createMockRes();
       await verifyResourcePassword(oldReq, oldRes);
@@ -341,7 +326,6 @@ async function runPasswordProtectionTests() {
         throw new Error('[Test Fail 11] Old password still worked after password update!');
       }
 
-      // New password should succeed
       const newReq = { params: { id: protectedId }, user: testUser, body: { password: newPassword } };
       const newRes = createMockRes();
       await verifyResourcePassword(newReq, newRes);
@@ -352,7 +336,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 11 Passed: Password update invalidates old password and enforces new password');
     }
 
-    // 12. Disable Protection
     {
       const req = {
         params: { id: protectedId },
@@ -376,7 +359,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 12 Passed: Disabling protection sets passwordProtected=false and clears passwordHash');
     }
 
-    // 13. Enable Protection on previously unprotected resource
     {
       const req = {
         params: { id: protectedId },
@@ -403,7 +385,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 13 Passed: Enabling protection on previously unprotected resource succeeds');
     }
 
-    // 14. Admin List API excludes passwordHash
     {
       const req = { admin: { _id: new mongoose.Types.ObjectId() }, query: {} };
       const res = createMockRes();
@@ -418,7 +399,6 @@ async function runPasswordProtectionTests() {
       console.log('✓ Test 14 Passed: Admin API list returns passwordProtected boolean but never exposes passwordHash');
     }
 
-    // Clean up test resources
     await Resource.deleteMany({ title: { $regex: new RegExp(`^${testTitlePrefix}`, 'i') } });
     await User.deleteMany({ email: 'testuser_pwd@example.com' });
     console.log('✓ Test Cleanup: Removed all temporary test Resource and User documents');
@@ -435,3 +415,4 @@ async function runPasswordProtectionTests() {
 }
 
 runPasswordProtectionTests();
+

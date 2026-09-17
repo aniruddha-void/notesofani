@@ -27,12 +27,10 @@ async function runTest() {
   try {
     await connectDB();
 
-    // Start ephemeral test server on port 5099
     const testPort = 5099;
     serverInstance = app.listen(testPort);
     console.log(`Test server running on port ${testPort}`);
 
-    // Create test user
     testUser = await User.create({
       googleId: 'test_download_google_' + Date.now(),
       email: `testdownload_${Date.now()}@example.com`,
@@ -40,7 +38,6 @@ async function runTest() {
     });
     userToken = generateToken({ id: testUser._id, role: 'user', email: testUser.email });
 
-    // Create test subject
     subject = await Subject.create({
       name: 'Computer Science ' + Date.now(),
       code: 'CS' + Math.floor(Math.random() * 1000),
@@ -62,7 +59,6 @@ async function runTest() {
     const fileUrlA = uploadA.url;
     const fileUrlB = uploadB.url;
 
-    // Create Resource A (Java PDF)
     resourceA = await Resource.create({
       title: 'Java Programming Fundamentals',
       description: 'Complete Java course pdf',
@@ -74,7 +70,6 @@ async function runTest() {
       downloadsCount: 0,
     });
 
-    // Create Resource B (Data Structures PDF)
     resourceB = await Resource.create({
       title: 'Data Structures and Algorithms',
       description: 'DSA material',
@@ -86,7 +81,6 @@ async function runTest() {
       downloadsCount: 0,
     });
 
-    // Create Protected Resource
     resourceProtected = await Resource.create({
       title: 'Protected Exam Paper',
       description: 'Password locked pdf',
@@ -96,14 +90,13 @@ async function runTest() {
       fileUrl: fileUrlA,
       published: true,
       passwordProtected: true,
-      passwordHash: '$2a$10$abcdefghijklmnopqrstuu', // dummy hash
+      passwordHash: '$2a$10$abcdefghijklmnopqrstuu',
     });
 
     console.log(`Resource A ID: ${resourceA._id}`);
     console.log(`Resource B ID: ${resourceB._id}`);
     console.log(`Resource Protected ID: ${resourceProtected._id}`);
 
-    // Helper to send HTTP requests to test server
     const makeRequest = (options, postData = null) => {
       return new Promise((resolve, reject) => {
         const req = http.request(options, (res) => {
@@ -125,7 +118,6 @@ async function runTest() {
       });
     };
 
-    // TEST 1: Download non-existent resource -> Expect 404 & 0 Download records
     console.log('\n[TEST 1] Downloading non-existent resource...');
     const fakeId = new mongoose.Types.ObjectId();
     const res1 = await makeRequest({
@@ -141,7 +133,6 @@ async function runTest() {
     if (downloads1 !== 0) throw new Error('Download record was created on 404 failure!');
     console.log('PASS: 404 returned and 0 Download records created.');
 
-    // TEST 2: Download protected resource without password -> Expect 403 & 0 Download records
     console.log('\n[TEST 2] Downloading protected resource without password verification...');
     const res2 = await makeRequest({
       hostname: 'localhost',
@@ -156,7 +147,6 @@ async function runTest() {
     if (downloads2 !== 0) throw new Error('Download record was created on 403 failure!');
     console.log('PASS: 403 returned and 0 Download records created.');
 
-    // TEST 3: Real download of Resource A -> Expect 200, Content-Disposition header, PDF content, and 1 Download record
     console.log('\n[TEST 3] Downloading Resource A (Java)...');
     const res3 = await makeRequest({
       hostname: 'localhost',
@@ -182,7 +172,6 @@ async function runTest() {
     }
     console.log('PASS: Real binary file served with attachment header & Download record created with exact Resource A ID.');
 
-    // TEST 4: Real download of Resource B -> Expect 200, Content-Disposition header, PDF content, and 2 Download records
     console.log('\n[TEST 4] Downloading Resource B (Data Structures)...');
     const res4 = await makeRequest({
       hostname: 'localhost',
@@ -208,7 +197,6 @@ async function runTest() {
     }
     console.log('PASS: Resource B served separately with distinct Resource B ID.');
 
-    // TEST 5: Verify Download History API (/api/v1/user/downloads) returns populated records with exact Resource IDs
     console.log('\n[TEST 5] Verifying Download History API (/api/v1/user/downloads)...');
     const resHistory = await makeRequest({
       hostname: 'localhost',
@@ -220,7 +208,7 @@ async function runTest() {
     const historyJson = JSON.parse(resHistory.text);
     console.log(`History records count: ${historyJson.data.history.length}`);
     if (historyJson.data.history.length !== 2) throw new Error('Download history API did not return 2 records');
-    
+
     const histIds = historyJson.data.history.map((h) => h.resource._id);
     console.log(`History resource IDs: ${histIds.join(', ')}`);
     if (!histIds.includes(resourceA._id.toString()) || !histIds.includes(resourceB._id.toString())) {
@@ -228,7 +216,6 @@ async function runTest() {
     }
     console.log('PASS: Download History API populates exact Resource IDs for Re-open navigation.');
 
-    // TEST 6: Verify Student Dashboard API (/api/v1/user/dashboard) reports real downloads count
     console.log('\n[TEST 6] Verifying Student Dashboard API (/api/v1/user/dashboard)...');
     const resDash = await makeRequest({
       hostname: 'localhost',
@@ -266,3 +253,4 @@ async function runTest() {
 }
 
 runTest();
+

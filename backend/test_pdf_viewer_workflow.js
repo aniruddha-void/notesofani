@@ -31,7 +31,6 @@ async function runTest() {
     serverInstance = app.listen(testPort);
     console.log(`Test server running on port ${testPort}`);
 
-    // Create test user
     testUser = await User.create({
       googleId: 'test_viewer_google_' + Date.now(),
       email: `testviewer_${Date.now()}@example.com`,
@@ -39,14 +38,12 @@ async function runTest() {
     });
     userToken = generateToken({ id: testUser._id, role: 'user', email: testUser.email });
 
-    // Create test subject
     subject = await Subject.create({
       name: 'Computer Engineering ' + Date.now(),
       code: 'CE' + Math.floor(Math.random() * 1000),
       description: 'Test Engineering Subject',
     });
 
-    // Create mock PDF files in uploads/pdf
     const uploadsDir = path.join(__dirname, 'uploads/pdf');
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -60,7 +57,6 @@ async function runTest() {
     const fileUrlA = `/uploads/pdf/${path.basename(pdfPathA)}`;
     const fileUrlB = `/uploads/pdf/${path.basename(pdfPathB)}`;
 
-    // Create Resource A (Java PDF)
     resourceA = await Resource.create({
       title: 'Java Programming Guide',
       description: 'Core Java reference PDF',
@@ -71,7 +67,6 @@ async function runTest() {
       published: true,
     });
 
-    // Create Resource B (DevOps PDF)
     resourceB = await Resource.create({
       title: 'DevOps & CI-CD Handbook',
       description: 'DevOps documentation PDF',
@@ -82,7 +77,6 @@ async function runTest() {
       published: true,
     });
 
-    // Create Protected PDF Resource
     const hash = await bcrypt.hash('secret123', 10);
     resourceProtected = await Resource.create({
       title: 'Protected Exam Paper PDF',
@@ -96,7 +90,6 @@ async function runTest() {
       passwordHash: hash,
     });
 
-    // Create Non-PDF Resource (Video)
     resourceVideo = await Resource.create({
       title: 'Java Tutorial Video',
       description: 'Video lesson',
@@ -138,7 +131,6 @@ async function runTest() {
       });
     };
 
-    // TEST 1: Load Resource A & Resource B via GET /api/v1/resources/:id -> Verify distinct IDs & files
     console.log('\n[TEST 1] Loading Resource A & Resource B for Viewer...');
     const resA = await makeRequest({
       hostname: 'localhost',
@@ -166,7 +158,6 @@ async function runTest() {
     }
     console.log('PASS: Resource A and Resource B loaded with distinct Resource IDs and file URLs.');
 
-    // TEST 2: Protected PDF without password -> fileUrl hidden & isUnlocked=false
     console.log('\n[TEST 2] Fetching Protected PDF without password...');
     const resProt = await makeRequest({
       hostname: 'localhost',
@@ -183,7 +174,6 @@ async function runTest() {
     }
     console.log('PASS: Locked PDF correctly hides fileUrl and does not expose passwordHash.');
 
-    // TEST 3: Submit Incorrect Password -> Expect 401
     console.log('\n[TEST 3] Verifying incorrect password for Protected PDF...');
     const postDataWrong = JSON.stringify({ password: 'wrongpassword' });
     const resWrong = await makeRequest(
@@ -203,7 +193,6 @@ async function runTest() {
     if (resWrong.statusCode !== 401) throw new Error('Expected 401 for incorrect password');
     console.log('PASS: Incorrect password denied with 401.');
 
-    // TEST 4: Submit Correct Password -> Expect 200, HTTP-only cookie, isUnlocked=true
     console.log('\n[TEST 4] Verifying correct password for Protected PDF...');
     const postDataCorrect = JSON.stringify({ password: 'secret123' });
     const resCorrect = await makeRequest(
@@ -230,7 +219,6 @@ async function runTest() {
     }
     console.log('PASS: Correct password unlocked PDF & issued resource-scoped HTTP-only cookie.');
 
-    // TEST 5: Download from Viewer reuses Task 1 download endpoint
     console.log('\n[TEST 5] Downloading PDF from Viewer using Task 1 API...');
     const resDownload = await makeRequest({
       hostname: 'localhost',
@@ -270,3 +258,4 @@ async function runTest() {
 }
 
 runTest();
+

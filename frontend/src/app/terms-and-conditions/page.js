@@ -14,7 +14,7 @@ export default function TermsPage() {
         <div className="max-w-5xl mx-auto px-gutter py-space-xl">
           <div className="flex flex-col w-full">
             <section className="max-w-3xl mx-auto w-full py-space-xl flex flex-col gap-space-lg">
-              {/* Meta Pill & Header */}
+              
               <div className="flex flex-col items-start gap-space-sm">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-tag text-label-tag tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -28,7 +28,7 @@ export default function TermsPage() {
                 </p>
               </div>
 
-              {/* Legal Sections */}
+             
               <div className="flex flex-col gap-space-xl mt-space-md">
                 <article className="flex flex-col gap-space-xs p-space-lg rounded-xl bg-surface-container/60 hover:bg-surface-container transition-colors duration-200">
                   <div className="flex items-baseline gap-space-sm">

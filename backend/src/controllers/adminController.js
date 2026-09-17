@@ -6,7 +6,6 @@ const Favorite = require('../models/Favorite');
 const UserResourceActivity = require('../models/UserResourceActivity');
 const { OFFICIAL_RESOURCE_TYPES } = require('../models/Resource');
 
-
 const getStats = async (req, res) => {
   try {
     const [
@@ -34,7 +33,6 @@ const getStats = async (req, res) => {
 
     const draftResources = totalResources >= publishedResources ? totalResources - publishedResources : 0;
 
-    // Format resource distribution map with 0 default for all 6 official types
     const resourceDistribution = {};
     OFFICIAL_RESOURCE_TYPES.forEach((t) => {
       resourceDistribution[t] = 0;
@@ -69,11 +67,6 @@ const getStats = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/admin/users (Admin Only)
- * Returns a list of registered users with search (name, email) and pagination.
- * Excludes any sensitive data.
- */
 const getUsersAdmin = async (req, res) => {
   try {
     const { search, page = 1, limit = 20 } = req.query;
@@ -127,10 +120,6 @@ const getUsersAdmin = async (req, res) => {
   }
 };
 
-/**
- * GET /api/v1/admin/users/:id (Admin Only)
- * Returns a single user's public info plus real activity metrics (viewed, downloads, favorites).
- */
 const getUserByIdAdmin = async (req, res) => {
   try {
     const { id } = req.params;

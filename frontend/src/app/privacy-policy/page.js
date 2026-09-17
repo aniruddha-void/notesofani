@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
             <div className="relative max-w-3xl mx-auto w-full px-space-md sm:px-gutter py-space-xl">
               <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-              {/* Header */}
+             
               <div className="flex flex-col items-start gap-space-sm mb-space-xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-primary font-label-tag text-label-tag">
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
                 </p>
               </div>
 
-              {/* Clauses List */}
+             
               <div className="flex flex-col divide-y divide-outline-variant/20">
                 <section className="py-space-lg flex flex-col gap-space-sm" id="section-1">
                   <div className="flex items-baseline gap-space-sm">

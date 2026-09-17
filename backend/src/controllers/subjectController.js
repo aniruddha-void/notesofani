@@ -1,16 +1,11 @@
 const Subject = require('../models/Subject');
 const Resource = require('../models/Resource');
 
-/**
- * GET /api/v1/subjects (Public)
- * Returns active subjects list.
- */
 const getSubjects = async (req, res) => {
   try {
     const query = { isActive: true };
     const subjects = await Subject.find(query).sort({ name: 1 }).lean();
 
-    // Calculate real resource count per subject
     const subjectIds = subjects.map((s) => s._id);
     const counts = await Resource.aggregate([
       { $match: { subject: { $in: subjectIds } } },
@@ -39,10 +34,6 @@ const getSubjects = async (req, res) => {
   }
 };
 
-/**
- * POST /api/v1/subjects (Admin Only)
- * Creates a new subject.
- */
 const createSubject = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -57,7 +48,6 @@ const createSubject = async (req, res) => {
     const trimmedName = name.trim();
     const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    // Case-insensitive duplicate check
     const existing = await Subject.findOne({
       name: { $regex: new RegExp(`^${escapedName}$`, 'i') },
     });
@@ -93,10 +83,6 @@ const createSubject = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/v1/subjects/:id (Admin Only)
- * Updates/renames an existing subject.
- */
 const updateSubject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -121,7 +107,6 @@ const updateSubject = async (req, res) => {
       const trimmedName = name.trim();
       const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-      // Check duplicate name on another document (case-insensitive)
       const duplicate = await Subject.findOne({
         _id: { $ne: id },
         name: { $regex: new RegExp(`^${escapedName}$`, 'i') },
@@ -161,10 +146,6 @@ const updateSubject = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/v1/subjects/:id (Admin Only)
- * Deletes a subject if no resources are linked to it.
- */
 const deleteSubject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -177,7 +158,6 @@ const deleteSubject = async (req, res) => {
       });
     }
 
-    // Safety check: Prevent deletion if any resources are linked to this subject
     const linkedResourcesCount = await Resource.countDocuments({ subject: id });
     if (linkedResourcesCount > 0) {
       return res.status(400).json({
@@ -206,3 +186,4 @@ module.exports = {
   updateSubject,
   deleteSubject,
 };
+

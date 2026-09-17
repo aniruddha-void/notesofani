@@ -19,7 +19,7 @@ export default function ContactPage() {
     subject: 'General Inquiry',
     message: '',
   });
-  const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'error'
+  const [status, setStatus] = useState('idle'); 
   const [errors, setErrors] = useState({});
   const [apiErrorMessage, setApiErrorMessage] = useState('');
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
@@ -49,7 +49,7 @@ export default function ContactPage() {
     e.preventDefault();
     if (status === 'sending') return;
 
-    // Check user authentication FIRST
+   
     if (!user) {
       setSignInModalOpen(true);
       return;
@@ -123,11 +123,11 @@ export default function ContactPage() {
       <main className="w-full flex-1 pt-16 bg-background">
         <div className="max-w-5xl mx-auto px-gutter py-space-xl">
           <div className="flex flex-col w-full">
-            {/* Subtle Ambient Glow */}
+           
             <div className="relative w-full overflow-hidden">
               <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[720px] h-[340px] bg-primary/5 blur-[120px] pointer-events-none rounded-full"></div>
 
-              {/* Editorial Hero Section */}
+             
               <section className="relative pt-4 pb-12 sm:pb-16 max-w-4xl mx-auto flex flex-col items-start gap-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-primary">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -143,10 +143,10 @@ export default function ContactPage() {
                 </div>
               </section>
 
-              {/* Main Workspace Section: Two-Column Form & Direct Contact */}
+              
               <section className="max-w-4xl mx-auto pb-16 sm:pb-24">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                  {/* Left Column: Direct Inquiry */}
+                 
                   <aside className="lg:col-span-4 flex flex-col gap-6">
                     <div className="bg-surface-container rounded-xl p-6 shadow-sm flex flex-col gap-6">
                       <div className="flex flex-col gap-2">
@@ -166,13 +166,13 @@ export default function ContactPage() {
                     </div>
                   </aside>
 
-                  {/* Right Column: Form Container */}
+                 
                   <main className="lg:col-span-8">
                     <div className="bg-surface-container rounded-xl p-7 sm:p-9 shadow-sm relative overflow-hidden">
                       {status === 'idle' && (
                         <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            {/* Name */}
+                           
                             <div className="flex flex-col gap-1.5">
                               <label className="font-body-sm text-body-sm text-on-surface font-medium" htmlFor="form-name">
                                 Name <span className="text-primary">*</span>
@@ -193,7 +193,7 @@ export default function ContactPage() {
                               )}
                             </div>
 
-                            {/* Email */}
+                            
                             <div className="flex flex-col gap-1.5">
                               <label className="font-body-sm text-body-sm text-on-surface font-medium" htmlFor="form-email">
                                 Email <span className="text-primary">*</span>
@@ -215,7 +215,7 @@ export default function ContactPage() {
                             </div>
                           </div>
 
-                          {/* Subject Selection */}
+                          
                           <div className="flex flex-col gap-1.5">
                             <label className="font-body-sm text-body-sm text-on-surface font-medium" htmlFor="form-subject">
                               Subject <span className="text-outline font-normal">(Optional)</span>
@@ -238,7 +238,7 @@ export default function ContactPage() {
                             </div>
                           </div>
 
-                          {/* Message Textarea */}
+                        
                           <div className="flex flex-col gap-1.5">
                             <label className="font-body-sm text-body-sm text-on-surface font-medium" htmlFor="form-message">
                               Message <span className="text-primary">*</span>
@@ -259,7 +259,7 @@ export default function ContactPage() {
                             )}
                           </div>
 
-                          {/* Submit Button */}
+                          
                           <div className="pt-2 flex items-center justify-between">
                             <button
                               className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-primary-container text-on-primary font-body-md text-body-md font-semibold hover:bg-primary transition-all shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -275,7 +275,7 @@ export default function ContactPage() {
                         </form>
                       )}
 
-                      {/* State 2: Sending */}
+                      
                       {status === 'sending' && (
                         <div className="min-h-[380px] flex flex-col items-center justify-center gap-4 text-center">
                           <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -286,7 +286,7 @@ export default function ContactPage() {
                         </div>
                       )}
 
-                      {/* State 3: Success Confirmation (Case A) */}
+                      
                       {status === 'success' && (
                         <div className="min-h-[380px] flex flex-col items-center justify-center gap-5 text-center px-4">
                           <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -309,7 +309,7 @@ export default function ContactPage() {
                         </div>
                       )}
 
-                      {/* State 3B: Partial Success (Case B) */}
+                    
                       {status === 'partial_success' && (
                         <div className="min-h-[380px] flex flex-col items-center justify-center gap-5 text-center px-4">
                           <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400">
@@ -332,7 +332,7 @@ export default function ContactPage() {
                         </div>
                       )}
 
-                      {/* State 4: Error Fallback (Case C) */}
+                      
                       {status === 'error' && (
                         <div className="min-h-[380px] flex flex-col items-center justify-center gap-5 text-center px-4">
                           <div className="w-14 h-14 rounded-full bg-error-container/30 flex items-center justify-center text-error">
@@ -372,7 +372,7 @@ export default function ContactPage() {
         onClose={() => setToast({ ...toast, visible: false })}
       />
 
-      {/* Sign in Required Modal for unauthenticated users */}
+      
       <Modal
         isOpen={signInModalOpen}
         onClose={() => setSignInModalOpen(false)}

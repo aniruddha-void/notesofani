@@ -12,7 +12,6 @@ const {
 } = require('../controllers/userController');
 const { protectUser } = require('../middlewares/authMiddleware');
 
-// All user routes require User authentication
 router.use(protectUser);
 
 router.get('/dashboard', getDashboard);
@@ -28,3 +27,4 @@ router.get('/profile', getProfile);
 router.put('/profile', updateProfile);
 
 module.exports = router;
+

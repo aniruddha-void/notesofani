@@ -16,11 +16,9 @@ async function testOneSubjectManyResources() {
     await mongoose.connect(mongoUri);
     console.log('--- STARTING VERIFICATION TEST ---');
 
-    // 1. Clean up old test data if present
     const testSubjectName = 'Data Structure & Algorithm Verification Test';
     await Subject.deleteMany({ name: { $regex: /Data Structure & Algorithm Verification Test/i } });
 
-    // 2. Create Subject
     console.log('Step 1: Creating Subject...');
     const subject = await Subject.create({
       name: testSubjectName,
@@ -29,7 +27,6 @@ async function testOneSubjectManyResources() {
     });
     console.log(`✓ Subject created with ID: ${subject._id}`);
 
-    // 3. Duplicate check (case-insensitive)
     console.log('Step 2: Testing case-insensitive duplicate subject protection...');
     const duplicateSubjectName = 'data structure & algorithm verification test';
     const escapedName = duplicateSubjectName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -42,7 +39,6 @@ async function testOneSubjectManyResources() {
       throw new Error('Case-insensitive duplicate check failed!');
     }
 
-    // 4. Create 5 distinct resources under the exact same Subject ID
     console.log('Step 3: Creating 5 resources under the exact same Subject ID for all 5 official types...');
     const resourceConfigs = [
       { title: 'DSA Notes PDF', resourceType: 'PDF', fileUrl: '/uploads/sample.pdf', sourceType: 'upload' },
@@ -63,7 +59,6 @@ async function testOneSubjectManyResources() {
     }
     console.log(`✓ Successfully created ${createdResources.length} resources under Subject ID ${subject._id}`);
 
-    // 5. Assert Counts
     console.log('Step 4: Asserting database counts...');
     const subjectCount = await Subject.countDocuments({ _id: subject._id });
     const resourceCount = await Resource.countDocuments({ subject: subject._id });
@@ -76,7 +71,6 @@ async function testOneSubjectManyResources() {
     }
     console.log('✓ Subject count = 1, Resource count = 5 verified!');
 
-    // 6. Verify Official Resource Types array
     console.log('Step 5: Verifying Official Resource Types...');
     console.log('  Allowed Types:', OFFICIAL_RESOURCE_TYPES);
     if (OFFICIAL_RESOURCE_TYPES.includes('Notes')) {
@@ -84,7 +78,6 @@ async function testOneSubjectManyResources() {
     }
     console.log('✓ "Notes" is absent from OFFICIAL_RESOURCE_TYPES. Verified exactly 5 canonical types!');
 
-    // 7. Edit Resource Test (PDF -> Video)
     console.log('Step 6: Editing Resource 1 (PDF -> Video)...');
     const pdfResource = createdResources[0];
     pdfResource.resourceType = 'Video';
@@ -101,7 +94,6 @@ async function testOneSubjectManyResources() {
     }
     console.log('✓ Resource edit successful. Subject count remains 1, resource count remains 5.');
 
-    // Cleanup
     console.log('Cleaning up test documents...');
     await Resource.deleteMany({ subject: subject._id });
     await Subject.deleteOne({ _id: subject._id });
@@ -116,3 +108,4 @@ async function testOneSubjectManyResources() {
 }
 
 testOneSubjectManyResources();
+

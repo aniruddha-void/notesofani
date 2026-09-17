@@ -19,7 +19,6 @@ async function runFinalResourceContentLogicTest() {
     const testSubjectName = 'DSA Final Logic Test Subject';
     await Subject.deleteMany({ name: { $regex: /DSA Final Logic Test Subject/i } });
 
-    // 1. Create 1 Subject
     console.log('\n--- 1. Subject Creation ---');
     const subject = await Subject.create({
       name: testSubjectName,
@@ -28,7 +27,6 @@ async function runFinalResourceContentLogicTest() {
     });
     console.log(`✓ Subject created: ${subject.name} (ID: ${subject._id})`);
 
-    // 2. Create 5 distinct resources under the SAME Subject
     console.log('\n--- 2. Creating 5 distinct Resources under 1 Subject ---');
 
     const res1 = await Resource.create({
@@ -85,7 +83,6 @@ async function runFinalResourceContentLogicTest() {
 
     console.log('✓ Successfully created 5 distinct resource documents!');
 
-    // 3. Database Count Assertions
     console.log('\n--- 3. Database Count Assertions ---');
     const subjectCount = await Subject.countDocuments({ _id: subject._id });
     const resourceCount = await Resource.countDocuments({ subject: subject._id });
@@ -98,13 +95,12 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Verified: 1 Subject supports 5 distinct Resource documents!');
 
-    // 4. Edit Resource 2 (Video -> Google Drive) by Resource ID
     console.log('\n--- 4. Test Edit: Video -> Google Drive ---');
     const targetRes2 = await Resource.findById(res2._id);
     targetRes2.resourceType = 'Google Drive';
     targetRes2.sourceType = 'external';
     targetRes2.externalUrl = 'https://drive.google.com/folder/abc-shared-folder';
-    targetRes2.fileUrl = ''; // Clear obsolete file content
+    targetRes2.fileUrl = '';
     await targetRes2.save();
 
     const updatedRes2_A = await Resource.findById(res2._id);
@@ -117,7 +113,6 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Video -> Google Drive edit succeeded!');
 
-    // 5. Edit Resource 2 again (Google Drive -> Video with Vimeo URL)
     console.log('\n--- 5. Test Edit: Google Drive -> Video (Vimeo URL) ---');
     updatedRes2_A.resourceType = 'Video';
     updatedRes2_A.sourceType = 'external';
@@ -133,7 +128,6 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Google Drive -> Video (Vimeo URL) edit succeeded!');
 
-    // 6. Test Edit: Metadata-only edit (Title update)
     console.log('\n--- 6. Test Edit: Metadata-only Title Update ---');
     const targetRes1 = await Resource.findById(res1._id);
     targetRes1.title = 'DSA Complete PDF Notes 2026';
@@ -145,7 +139,6 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Metadata-only update preserved existing PDF fileUrl!');
 
-    // 7. Test Edit: Video -> Useful Link
     console.log('\n--- 7. Test Edit: Video -> Useful Link ---');
     updatedRes2_B.resourceType = 'Useful Link';
     updatedRes2_B.externalUrl = 'https://developer.mozilla.org/';
@@ -157,7 +150,6 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Video -> Useful Link edit succeeded!');
 
-    // 8. Re-assert database counts to ensure no new resources/subjects were created during editing
     console.log('\n--- 8. Final Count Verification After All Edits ---');
     const finalSubjectCount = await Subject.countDocuments({ _id: subject._id });
     const finalResourceCount = await Resource.countDocuments({ subject: subject._id });
@@ -170,7 +162,6 @@ async function runFinalResourceContentLogicTest() {
     }
     console.log('✓ Confirmed: All edits updated exact Resource IDs without creating duplicate subjects or resources!');
 
-    // Cleanup
     console.log('\nCleaning up test documents...');
     await Resource.deleteMany({ subject: subject._id });
     await Subject.deleteOne({ _id: subject._id });
@@ -185,3 +176,4 @@ async function runFinalResourceContentLogicTest() {
 }
 
 runFinalResourceContentLogicTest();
+
