@@ -25,7 +25,16 @@ const seedAdmin = async () => {
 
     const existing = await Admin.findOne({ email: adminEmail });
     if (existing) {
-      console.log(`[Admin Seeder] Admin account '${adminEmail}' already exists in database.`);
+      const isMatch = await bcrypt.compare(adminPassword, existing.passwordHash);
+      if (!isMatch) {
+        const salt = await bcrypt.genSalt(10);
+        existing.passwordHash = await bcrypt.hash(adminPassword, salt);
+        existing.email = adminEmail;
+        await existing.save();
+        console.log(`[Admin Seeder] Admin password synchronized successfully for admin: ${adminEmail}`);
+      } else {
+        console.log(`[Admin Seeder] Admin account is already synchronized for admin: ${adminEmail}`);
+      }
       await mongoose.disconnect();
       return;
     }
@@ -44,12 +53,19 @@ const seedAdmin = async () => {
     await mongoose.disconnect();
   } catch (error) {
     console.error('[Admin Seeder Error]:', error.message);
+    try {
+      await mongoose.disconnect();
+    } catch (e) {}
     process.exit(1);
   }
 };
 
 if (require.main === module) {
-  seedAdmin();
+  seedAdmin().then(() => {
+    process.exit(0);
+  }).catch(() => {
+    process.exit(1);
+  });
 }
 
 module.exports = seedAdmin;
