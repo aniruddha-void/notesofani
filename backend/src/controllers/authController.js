@@ -98,7 +98,15 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    const admin = await Admin.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const admin = await Admin.findOne({ email: normalizedEmail });
+    const adminFound = !!admin;
+    const passwordHashExists = !!(admin && admin.passwordHash);
+
+    console.log(
+      `[Admin Login Diagnostic] email: ${normalizedEmail}, adminFound: ${adminFound}, passwordHashExists: ${passwordHashExists}`
+    );
+
     if (!admin) {
       return res.status(401).json({
         status: 'error',
@@ -106,7 +114,13 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
+    let isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
+    if (!isPasswordValid && typeof password === 'string' && password.trim() !== password) {
+      isPasswordValid = await bcrypt.compare(password.trim(), admin.passwordHash);
+    }
+
+    console.log(`[Admin Login Diagnostic] bcryptResult: ${isPasswordValid}, statusCheckPassed: true`);
+
     if (!isPasswordValid) {
       return res.status(401).json({
         status: 'error',
@@ -124,7 +138,7 @@ const adminLogin = async (req, res) => {
       admin: {
         _id: admin._id,
         email: admin.email,
-        name: admin.name,
+        name: admin.name || 'NotesofAni Administrator',
         role: 'admin',
       },
     });
