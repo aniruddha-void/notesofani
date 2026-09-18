@@ -113,6 +113,8 @@ class S3StorageAdapter extends IStorageService {
     } else if (keyOrUrl.startsWith('/')) {
       fileKey = keyOrUrl.replace(/^\//, '');
     }
+
+    fileKey = fileKey.replace(/^\/+/, '');
     return fileKey;
   }
 
@@ -120,20 +122,25 @@ class S3StorageAdapter extends IStorageService {
     if (!keyOrUrl) return false;
     this._verifyCredentials();
 
-    const fileKey = this._extractKey(keyOrUrl);
+    const primaryKey = this._extractKey(keyOrUrl);
+    const keysToTry = [primaryKey];
+    if (primaryKey.startsWith('uploads/')) {
+      keysToTry.push(primaryKey.substring(8));
+    }
 
     if (this.s3Client) {
-      try {
-        const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
-        const command = new DeleteObjectCommand({
-          Bucket: this.bucketName,
-          Key: fileKey,
-        });
-        await this.s3Client.send(command);
-        return true;
-      } catch (err) {
-        console.error('[StorageAdapter Delete Error]:', err.message || err);
-        return false;
+      const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
+      for (const fileKey of [...new Set(keysToTry)]) {
+        try {
+          const command = new DeleteObjectCommand({
+            Bucket: this.bucketName,
+            Key: fileKey,
+          });
+          await this.s3Client.send(command);
+          return true;
+        } catch (err) {
+          console.error('[StorageAdapter Delete Error]:', err.message || err);
+        }
       }
     }
 
@@ -144,20 +151,40 @@ class S3StorageAdapter extends IStorageService {
     if (!keyOrUrl) return null;
     this._verifyCredentials();
 
-    const fileKey = this._extractKey(keyOrUrl);
+    const rawKey = this._extractKey(keyOrUrl);
+    const keysToTry = [
+      rawKey,
+      decodeURIComponent(rawKey),
+    ];
+
+    if (rawKey.startsWith('uploads/')) {
+      const stripped = rawKey.substring(8);
+      keysToTry.push(stripped);
+      keysToTry.push(decodeURIComponent(stripped));
+    }
+
+    if (!rawKey.startsWith('pdf/') && !rawKey.startsWith('uploads/')) {
+      keysToTry.push(`pdf/${rawKey}`);
+      keysToTry.push(`pdf/${decodeURIComponent(rawKey)}`);
+    }
+
+    const uniqueKeys = [...new Set(keysToTry.filter(Boolean))];
 
     if (this.s3Client) {
-      try {
-        const { GetObjectCommand } = require('@aws-sdk/client-s3');
-        const command = new GetObjectCommand({
-          Bucket: this.bucketName,
-          Key: fileKey,
-        });
-        const response = await this.s3Client.send(command);
-        return response.Body;
-      } catch (err) {
-        console.error('[StorageAdapter GetStream Error]:', err.message || err);
-        return null;
+      const { GetObjectCommand } = require('@aws-sdk/client-s3');
+      for (const fileKey of uniqueKeys) {
+        try {
+          const command = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key: fileKey,
+          });
+          const response = await this.s3Client.send(command);
+          if (response && response.Body) {
+            return response.Body;
+          }
+        } catch (err) {
+          // Try next key candidate
+        }
       }
     }
 

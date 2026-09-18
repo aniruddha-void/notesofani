@@ -603,9 +603,10 @@ const verifyResourcePassword = async (req, res) => {
 const recordDownload = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
+    const isAdmin = Boolean(req.admin || req.user?.role === 'admin');
+    const query = isAdmin ? { _id: id } : { _id: id, published: true };
 
-    const resource = await Resource.findOne({ _id: id, published: true }).select('+passwordHash');
+    const resource = await Resource.findOne(query).select('+passwordHash');
     if (!resource) {
       return res.status(404).json({
         status: 'error',
@@ -631,13 +632,19 @@ const recordDownload = async (req, res) => {
         });
       }
 
-      await Download.create({
-        user: userId,
-        resource: resource._id,
-        downloadedAt: new Date(),
-      });
+      if (req.user && req.user._id && !isAdmin) {
+        try {
+          await Download.create({
+            user: req.user._id,
+            resource: resource._id,
+            downloadedAt: new Date(),
+          });
+        } catch (dErr) {
+          console.error('[Record Download Activity Error]:', dErr.message || dErr);
+        }
+      }
 
-      resource.downloadsCount += 1;
+      resource.downloadsCount = (resource.downloadsCount || 0) + 1;
       await resource.save();
 
       const ext = path.extname(resource.fileUrl).toLowerCase() || '.pdf';
@@ -650,13 +657,19 @@ const recordDownload = async (req, res) => {
       return fileStream.pipe(res);
     } else if (resource.externalUrl) {
 
-      await Download.create({
-        user: userId,
-        resource: resource._id,
-        downloadedAt: new Date(),
-      });
+      if (req.user && req.user._id && !isAdmin) {
+        try {
+          await Download.create({
+            user: req.user._id,
+            resource: resource._id,
+            downloadedAt: new Date(),
+          });
+        } catch (dErr) {
+          console.error('[Record Download Activity Error]:', dErr.message || dErr);
+        }
+      }
 
-      resource.downloadsCount += 1;
+      resource.downloadsCount = (resource.downloadsCount || 0) + 1;
       await resource.save();
 
       return res.status(200).json({
@@ -743,8 +756,10 @@ const getAllResourcesAdmin = async (req, res) => {
 const streamResourceFile = async (req, res) => {
   try {
     const { id } = req.params;
+    const isAdmin = Boolean(req.admin || req.user?.role === 'admin');
+    const query = isAdmin ? { _id: id } : { _id: id, published: true };
 
-    const resource = await Resource.findOne({ _id: id, published: true }).select('+passwordHash');
+    const resource = await Resource.findOne(query).select('+passwordHash');
     if (!resource) {
       return res.status(404).json({
         status: 'error',
