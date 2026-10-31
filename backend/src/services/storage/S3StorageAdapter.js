@@ -188,6 +188,17 @@ class S3StorageAdapter extends IStorageService {
       }
     }
 
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const localDir = path.join(__dirname, '../../../uploads');
+      const cleanPath = (rawKey || '').replace(/^uploads\//, '');
+      const localPath = path.join(localDir, cleanPath);
+      if (fs.existsSync(localPath)) {
+        return fs.createReadStream(localPath);
+      }
+    } catch (_) {}
+
     return null;
   }
 }

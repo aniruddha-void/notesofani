@@ -3,6 +3,7 @@ const path = require('path');
 const Resource = require('../models/Resource');
 const Subject = require('../models/Subject');
 const Download = require('../models/Download');
+const Purchase = require('../models/Purchase');
 const StorageFactory = require('../services/storage/storageFactory');
 const bcrypt = require('bcryptjs');
 const { generateToken, verifyToken } = require('../utils/jwt');
@@ -70,11 +71,39 @@ const getResources = async (req, res) => {
     const authenticatedUser = getAuthenticatedUser(req);
     const isLoggedIn = Boolean(authenticatedUser);
 
+    let userPurchasesMap = new Map();
+    if (isLoggedIn && resourcesList.length > 0) {
+      const resourceIds = resourcesList.map((r) => r._id);
+      const userPurchases = await Purchase.find({
+        user: authenticatedUser._id || authenticatedUser.id,
+        resource: { $in: resourceIds },
+      }).lean();
+      userPurchases.forEach((p) => {
+        userPurchasesMap.set(String(p.resource), p);
+      });
+    }
+
     const processedResources = resourcesList.map((doc) => {
       const obj = doc.toObject({ virtuals: true });
       delete obj.passwordHash;
       const isProtected = Boolean(obj.passwordProtected);
-      const isUnlocked = isLoggedIn && (!isProtected || hasResourceAccess(req, obj._id));
+      const isPremium = Boolean(obj.isPremium);
+      const purchase = userPurchasesMap.get(String(obj._id));
+      const isPurchased = purchase?.status === 'approved';
+      const hasPendingPurchase = purchase?.status === 'pending';
+
+      obj.isPurchased = Boolean(isPurchased);
+      obj.hasPendingPurchase = Boolean(hasPendingPurchase);
+
+      let isUnlocked = false;
+      if (req.admin) {
+        isUnlocked = true;
+      } else if (isPremium) {
+        isUnlocked = isLoggedIn && isPurchased && (!isProtected || hasResourceAccess(req, obj._id));
+      } else {
+        isUnlocked = isLoggedIn && (!isProtected || hasResourceAccess(req, obj._id));
+      }
+
       if (!isUnlocked) {
         obj.fileUrl = '';
         obj.externalUrl = '';
@@ -130,7 +159,34 @@ const getResourceById = async (req, res) => {
     const authenticatedUser = getAuthenticatedUser(req);
     const isLoggedIn = Boolean(authenticatedUser);
     const isProtected = Boolean(resource.passwordProtected);
-    const isUnlocked = isLoggedIn && (!isProtected || hasResourceAccess(req, resource._id));
+    const isPremium = Boolean(resource.isPremium);
+
+    let isPurchased = false;
+    let hasPendingPurchase = false;
+
+    if (isLoggedIn) {
+      const purchase = await Purchase.findOne({
+        user: authenticatedUser._id || authenticatedUser.id,
+        resource: resource._id,
+      }).sort({ createdAt: -1 });
+
+      if (purchase) {
+        isPurchased = purchase.status === 'approved';
+        hasPendingPurchase = purchase.status === 'pending';
+      }
+    }
+
+    resourceObj.isPurchased = isPurchased;
+    resourceObj.hasPendingPurchase = hasPendingPurchase;
+
+    let isUnlocked = false;
+    if (req.admin) {
+      isUnlocked = true;
+    } else if (isPremium) {
+      isUnlocked = isLoggedIn && isPurchased && (!isProtected || hasResourceAccess(req, resource._id));
+    } else {
+      isUnlocked = isLoggedIn && (!isProtected || hasResourceAccess(req, resource._id));
+    }
 
     if (!isUnlocked) {
       resourceObj.fileUrl = '';
@@ -178,6 +234,8 @@ const createResource = async (req, res) => {
       embedVideoUrl,
       passwordProtected,
       password,
+      isPremium,
+      price,
     } = req.body;
 
     const targetType = resourceType || type;
@@ -208,6 +266,18 @@ const createResource = async (req, res) => {
 
     const isPublished = published !== undefined ? Boolean(published) : status === 'Published';
     const isFileBased = targetType === 'PDF' || targetType === 'PYQ';
+
+    const isPremiumResource = isPremium === 'true' || isPremium === true;
+    let numericPrice = 0;
+    if (isPremiumResource) {
+      numericPrice = Number(price);
+      if (isNaN(numericPrice) || numericPrice <= 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'A valid price in INR (greater than 0) is required for premium resources.',
+        });
+      }
+    }
 
     const isProtected = passwordProtected === 'true' || passwordProtected === true;
     let hashedPassword = null;
@@ -271,6 +341,8 @@ const createResource = async (req, res) => {
       createdBy: req.admin ? req.admin._id : null,
       passwordProtected: isProtected,
       passwordHash: hashedPassword,
+      isPremium: isPremiumResource,
+      price: isPremiumResource ? numericPrice : 0,
     });
 
     const populatedResource = await Resource.findById(newResource._id).populate('subject', 'name code description');
@@ -313,6 +385,8 @@ const updateResource = async (req, res) => {
       embedVideoUrl,
       passwordProtected,
       password,
+      isPremium,
+      price,
     } = req.body;
 
     const resource = await Resource.findById(id).select('+passwordHash');
@@ -347,6 +421,35 @@ const updateResource = async (req, res) => {
     if (subjectId) resource.subject = subjectId;
     if (published !== undefined) resource.published = Boolean(published);
     else if (status !== undefined) resource.published = status === 'Published';
+
+    if (isPremium !== undefined) {
+      const isPremiumVal = isPremium === 'true' || isPremium === true;
+      if (isPremiumVal) {
+        let priceVal = price !== undefined ? Number(price) : resource.price;
+        if (isNaN(priceVal) || priceVal <= 0) {
+          return res.status(400).json({
+            status: 'error',
+            message: 'A valid price in INR (greater than 0) is required for premium resources.',
+          });
+        }
+        resource.isPremium = true;
+        resource.price = priceVal;
+      } else {
+        resource.isPremium = false;
+        if (price !== undefined) {
+          resource.price = Math.max(0, Number(price) || 0);
+        }
+      }
+    } else if (price !== undefined) {
+      const priceVal = Number(price);
+      if (resource.isPremium && (isNaN(priceVal) || priceVal <= 0)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'A valid price in INR (greater than 0) is required for premium resources.',
+        });
+      }
+      resource.price = Math.max(0, priceVal || 0);
+    }
 
     if (passwordProtected !== undefined) {
       const isProtected = passwordProtected === 'true' || passwordProtected === true;
@@ -614,6 +717,27 @@ const recordDownload = async (req, res) => {
       });
     }
 
+    if (resource.isPremium && !isAdmin) {
+      const authUser = req.user || getAuthenticatedUser(req);
+      if (!authUser || !authUser._id) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'Authentication required to download premium resource.',
+        });
+      }
+      const approvedPurchase = await Purchase.findOne({
+        user: authUser._id,
+        resource: resource._id,
+        status: 'approved',
+      });
+      if (!approvedPurchase) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Access denied. You must purchase this premium resource to download it.',
+        });
+      }
+    }
+
     if (resource.passwordProtected && !hasResourceAccess(req, resource._id.toString())) {
       return res.status(403).json({
         status: 'error',
@@ -765,6 +889,27 @@ const streamResourceFile = async (req, res) => {
         status: 'error',
         message: 'Resource not found or not published.',
       });
+    }
+
+    if (resource.isPremium && !isAdmin) {
+      const authUser = req.user || getAuthenticatedUser(req);
+      if (!authUser || !authUser._id) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'Authentication required to access premium resource.',
+        });
+      }
+      const approvedPurchase = await Purchase.findOne({
+        user: authUser._id,
+        resource: resource._id,
+        status: 'approved',
+      });
+      if (!approvedPurchase) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Access denied. You must purchase this premium resource to access it.',
+        });
+      }
     }
 
     if (resource.passwordProtected && !hasResourceAccess(req, resource._id.toString())) {

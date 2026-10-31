@@ -14,6 +14,8 @@ export default function ProfilePage() {
   const { user, loading, logoutUser } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [dashLoading, setDashLoading] = useState(true);
+  const [purchases, setPurchases] = useState([]);
+  const [purchasesLoading, setPurchasesLoading] = useState(true);
 
   useEffect(() => {
     async function fetchDashboard() {
@@ -31,7 +33,25 @@ export default function ProfilePage() {
         }
       }
     }
+
+    async function fetchPurchases() {
+      if (user) {
+        try {
+          setPurchasesLoading(true);
+          const res = await apiClient.get('/user/purchases');
+          if (res.data?.data?.purchases) {
+            setPurchases(res.data.data.purchases);
+          }
+        } catch (err) {
+          console.error('[ProfilePage] Purchases fetch error:', err);
+        } finally {
+          setPurchasesLoading(false);
+        }
+      }
+    }
+
     fetchDashboard();
+    fetchPurchases();
   }, [user]);
 
   if (loading) {
@@ -94,7 +114,7 @@ export default function ProfilePage() {
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
               Your Learning Overview
             </h3>
-            <div className="grid grid-cols-3 gap-3 sm:gap-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-center">
               <div className="p-4 sm:p-5 rounded-xl bg-obsidian-900/70 border border-white/[0.06] flex flex-col items-center justify-center">
                 <span className="text-2xl sm:text-3xl font-extrabold text-white mb-1">
                   {dashboard?.stats?.viewed ?? 0}
@@ -115,11 +135,17 @@ export default function ProfilePage() {
                 </span>
                 <span className="text-xs font-semibold text-slate-400">Favorites</span>
               </div>
+
+              <div className="p-4 sm:p-5 rounded-xl bg-obsidian-900/70 border border-white/[0.06] flex flex-col items-center justify-center">
+                <span className="text-2xl sm:text-3xl font-extrabold text-amber-400 mb-1">
+                  {purchases.length}
+                </span>
+                <span className="text-xs font-semibold text-slate-400">Purchases</span>
+              </div>
             </div>
           </div>
 
-     
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <Link
               href="/favorites"
               className="p-5 rounded-xl bg-obsidian-900/60 border border-white/[0.06] hover:border-rose-500/30 transition-all flex items-center gap-4 group"
@@ -149,6 +175,137 @@ export default function ProfilePage() {
                 <p className="text-xs text-slate-400">Track downloaded files</p>
               </div>
             </Link>
+
+            <Link
+              href="/purchases"
+              className="p-5 rounded-xl bg-obsidian-900/60 border border-white/[0.06] hover:border-amber-500/30 transition-all flex items-center gap-4 group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+              </div>
+              <div>
+                <h4 className="font-bold text-white group-hover:text-amber-400 transition-colors">
+                  My Purchases
+                </h4>
+                <p className="text-xs text-slate-400">Premium resources & status</p>
+              </div>
+            </Link>
+          </div>
+
+          {/* My Purchases Section */}
+          <div id="my-purchases" className="mb-8 pt-8 border-t border-white/[0.06]">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  My Purchases
+                </h3>
+                {purchases.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    {purchases.length}
+                  </span>
+                )}
+              </div>
+              {purchases.length > 0 && (
+                <Link href="/purchases" className="text-xs text-sky-400 hover:text-sky-300 font-medium flex items-center gap-1">
+                  View full history <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </Link>
+              )}
+            </div>
+
+            {purchasesLoading ? (
+              <div className="p-6 rounded-xl bg-obsidian-900/50 border border-white/[0.04] text-center text-slate-400 text-xs">
+                Loading your purchase history...
+              </div>
+            ) : purchases.length === 0 ? (
+              <div className="p-6 rounded-xl bg-obsidian-900/50 border border-white/[0.04] text-center">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto mb-2">
+                  <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+                </div>
+                <p className="text-white font-medium text-sm mb-1">No purchase requests yet.</p>
+                <p className="text-slate-400 text-xs">
+                  When you buy premium resources, your access and payment verification status will appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {purchases.slice(0, 5).map((purchase) => {
+                  const res = purchase.resource;
+                  if (!res) return null;
+                  return (
+                    <div
+                      key={purchase._id}
+                      className="p-4 rounded-xl bg-obsidian-900/60 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h4 className="font-bold text-white text-sm truncate">
+                            {res.title}
+                          </h4>
+                          {purchase.status === 'approved' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                              Approved
+                            </span>
+                          )}
+                          {purchase.status === 'pending' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              <span className="material-symbols-outlined text-[12px]">schedule</span>
+                              Pending Verification
+                            </span>
+                          )}
+                          {purchase.status === 'rejected' && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                              <span className="material-symbols-outlined text-[12px]">cancel</span>
+                              Rejected
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                          <span className="font-semibold text-amber-400">₹{purchase.amount} INR</span>
+                          <span>•</span>
+                          <span className="font-mono text-[11px]">UTR: {purchase.transactionId}</span>
+                          <span>•</span>
+                          <span>
+                            {new Date(purchase.createdAt).toLocaleDateString(undefined, {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </span>
+                        </div>
+
+                        {purchase.status === 'rejected' && purchase.rejectionReason && (
+                          <p className="text-xs text-rose-400 mt-1">
+                            Reason: {purchase.rejectionReason}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="shrink-0 flex items-center justify-end">
+                        {purchase.status === 'approved' ? (
+                          <Link
+                            href={`/resources/${res._id}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold transition-all shadow-sm"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">lock_open</span>
+                            Access Resource
+                          </Link>
+                        ) : purchase.status === 'pending' ? (
+                          <span className="text-xs text-amber-400/80 font-medium">
+                            Admin verifying payment
+                          </span>
+                        ) : (
+                          <span className="text-xs text-rose-400/80 font-medium">
+                            Access not granted
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="mb-8 pt-8 border-t border-white/[0.06]">

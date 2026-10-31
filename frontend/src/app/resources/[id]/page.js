@@ -9,6 +9,7 @@ import LoadingState from '../../../components/ui/LoadingState';
 import ErrorState from '../../../components/ui/ErrorState';
 import apiClient, { getFileUrl } from '../../../lib/api-client';
 import { useAuth } from '../../../context/AuthContext';
+import BuyNowModal from '../../../components/resources/BuyNowModal';
 
 export default function ResourceDetailPage({ params }) {
   const { id } = params;
@@ -18,6 +19,9 @@ export default function ResourceDetailPage({ params }) {
   const [error, setError] = useState('');
   const [isFavorited, setIsFavorited] = useState(false);
   const [downloading, setDownloading] = useState(false);
+
+  // Buy Now Modal state
+  const [showBuyModal, setShowBuyModal] = useState(false);
 
   // Password Protection & Authentication Modal state
   const [inputPassword, setInputPassword] = useState('');
@@ -194,8 +198,26 @@ export default function ResourceDetailPage({ params }) {
           <div className="bg-obsidian-800/60 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-4 sm:p-8 shadow-2xl overflow-hidden">
             {/* Header Metadata */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-white/[0.06]">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <ResourceTypeBadge type={resource.type} />
+                {resource.isPremium && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 shadow-sm">
+                    <span className="material-symbols-outlined text-[14px]">workspace_premium</span>
+                    Premium • ₹{resource.price} INR
+                  </span>
+                )}
+                {resource.isPurchased && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="material-symbols-outlined text-[14px]">verified</span>
+                    Purchased & Unlocked
+                  </span>
+                )}
+                {resource.hasPendingPurchase && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <span className="material-symbols-outlined text-[14px]">schedule</span>
+                    Verification Pending
+                  </span>
+                )}
                 {resource.passwordProtected && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                     <span className="material-symbols-outlined text-[14px]">lock</span>
@@ -216,9 +238,66 @@ export default function ResourceDetailPage({ params }) {
             )}
 
             {/* Description */}
-            <div className="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed mb-8">
+            <div className="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed mb-6">
               <p>{resource.description || 'No detailed description available for this study material.'}</p>
             </div>
+
+            {/* Premium Resource Purchase / Pending State Box */}
+            {resource.isPremium && !resource.isPurchased && (
+              resource.hasPendingPurchase ? (
+                <div className="my-6 p-5 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="material-symbols-outlined text-[24px]">hourglass_top</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">Payment Verification in Progress</h4>
+                      <p className="text-xs text-slate-300 max-w-lg mt-0.5 leading-relaxed">
+                        Your payment request has been received. The administrator will verify your transaction reference in PhonePe/bank account and activate access shortly.
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/profile"
+                    className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-semibold transition-all shrink-0"
+                  >
+                    View Status
+                  </Link>
+                </div>
+              ) : (
+                <div className="my-6 p-6 bg-gradient-to-r from-amber-500/10 via-obsidian-900 to-obsidian-900 border border-amber-500/25 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      <span className="material-symbols-outlined text-[13px]">workspace_premium</span>
+                      Premium Resource
+                    </div>
+                    <h4 className="font-bold text-white text-base">Get Full Lifetime Access</h4>
+                    <p className="text-xs text-slate-400 max-w-md">
+                      Unlock this verified study material for instant viewing and unlimited downloads via simple manual UPI payment.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="text-left sm:text-right">
+                      <span className="text-[10px] uppercase text-slate-400 block font-semibold">One-time price</span>
+                      <span className="text-2xl font-black text-amber-400">₹{resource.price}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (!user) {
+                          setShowSignInModal(true);
+                        } else {
+                          setShowBuyModal(true);
+                        }
+                      }}
+                      className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-extrabold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
+              )
+            )}
 
             {/* Password Protection Card if locked */}
             {resource.passwordProtected && !resource.isUnlocked ? (
@@ -302,123 +381,166 @@ export default function ResourceDetailPage({ params }) {
               </button>
 
               <div className="flex items-center gap-3">
-                {/* PDF Actions */}
-                {(resource.resourceType === 'PDF' || resource.type === 'PDF') && (
-                  <>
-                    <Link
-                      href={`/resources/${resource._id}/view`}
-                      onClick={(e) => {
+                {/* Premium Lock Action when not yet purchased */}
+                {resource.isPremium && !resource.isPurchased ? (
+                  resource.hasPendingPurchase ? (
+                    <button
+                      disabled
+                      className="px-5 py-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold text-sm flex items-center gap-2 cursor-not-allowed opacity-90"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">hourglass_top</span>
+                      Payment Verification Pending
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
                         if (!user) {
-                          e.preventDefault();
                           setShowSignInModal(true);
+                        } else {
+                          setShowBuyModal(true);
                         }
                       }}
-                      className="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-sm transition-all flex items-center gap-2"
+                      className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-[20px]">visibility</span>
-                      View PDF
-                    </Link>
-
-                    <button
-                      onClick={handleDownload}
-                      disabled={downloading}
-                      className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20 disabled:opacity-50"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">download</span>
-                      {downloading ? 'Processing...' : 'Download File'}
+                      <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      Buy Now — ₹{resource.price}
                     </button>
-                  </>
-                )}
-
-                {/* PYQ Actions */}
-                {(resource.resourceType === 'PYQ' || resource.type === 'PYQ') && (
+                  )
+                ) : (
                   <>
-                    <Link
-                      href={`/resources/${resource._id}/view`}
-                      onClick={(e) => {
-                        if (!user) {
-                          e.preventDefault();
-                          setShowSignInModal(true);
-                        }
-                      }}
-                      className="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-sm transition-all flex items-center gap-2"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">visibility</span>
-                      View PYQ
-                    </Link>
+                    {/* PDF Actions */}
+                    {(resource.resourceType === 'PDF' || resource.type === 'PDF') && (
+                      <>
+                        <Link
+                          href={`/resources/${resource._id}/view`}
+                          onClick={(e) => {
+                            if (!user) {
+                              e.preventDefault();
+                              setShowSignInModal(true);
+                            }
+                          }}
+                          className="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-sm transition-all flex items-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">visibility</span>
+                          View PDF
+                        </Link>
 
-                    <button
-                      onClick={handleDownload}
-                      disabled={downloading}
-                      className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20 disabled:opacity-50"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">download</span>
-                      {downloading ? 'Processing...' : 'Download File'}
-                    </button>
+                        <button
+                          onClick={handleDownload}
+                          disabled={downloading}
+                          className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20 disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">download</span>
+                          {downloading ? 'Processing...' : 'Download File'}
+                        </button>
+                      </>
+                    )}
+
+                    {/* PYQ Actions */}
+                    {(resource.resourceType === 'PYQ' || resource.type === 'PYQ') && (
+                      <>
+                        <Link
+                          href={`/resources/${resource._id}/view`}
+                          onClick={(e) => {
+                            if (!user) {
+                              e.preventDefault();
+                              setShowSignInModal(true);
+                            }
+                          }}
+                          className="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-sm transition-all flex items-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">visibility</span>
+                          View PYQ
+                        </Link>
+
+                        <button
+                          onClick={handleDownload}
+                          disabled={downloading}
+                          className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20 disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">download</span>
+                          {downloading ? 'Processing...' : 'Download File'}
+                        </button>
+                      </>
+                    )}
+
+                    {/* Video Action */}
+                    {(resource.resourceType === 'Video' || resource.type === 'Video') && (
+                      <a
+                        href={user && resource.externalUrl ? resource.externalUrl : '#'}
+                        onClick={(e) => {
+                          if (!user) {
+                            e.preventDefault();
+                            setShowSignInModal(true);
+                          }
+                        }}
+                        target={user && resource.externalUrl ? '_blank' : '_self'}
+                        rel="noopener noreferrer"
+                        className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                        Watch Video
+                      </a>
+                    )}
+
+                    {/* Google Drive Action */}
+                    {(resource.resourceType === 'Google Drive' || resource.type === 'Google Drive') && (
+                      <a
+                        href={user && resource.externalUrl ? resource.externalUrl : '#'}
+                        onClick={(e) => {
+                          if (!user) {
+                            e.preventDefault();
+                            setShowSignInModal(true);
+                          }
+                        }}
+                        target={user && resource.externalUrl ? '_blank' : '_self'}
+                        rel="noopener noreferrer"
+                        className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                        Open Google Drive
+                      </a>
+                    )}
+
+                    {/* Useful Link Action */}
+                    {(resource.resourceType === 'Useful Link' || resource.type === 'Useful Link') && (
+                      <a
+                        href={user && resource.externalUrl ? resource.externalUrl : '#'}
+                        onClick={(e) => {
+                          if (!user) {
+                            e.preventDefault();
+                            setShowSignInModal(true);
+                          }
+                        }}
+                        target={user && resource.externalUrl ? '_blank' : '_self'}
+                        rel="noopener noreferrer"
+                        className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                        Open Link
+                      </a>
+                    )}
                   </>
-                )}
-
-                {/* Video Action */}
-                {(resource.resourceType === 'Video' || resource.type === 'Video') && (
-                  <a
-                    href={user && resource.externalUrl ? resource.externalUrl : '#'}
-                    onClick={(e) => {
-                      if (!user) {
-                        e.preventDefault();
-                        setShowSignInModal(true);
-                      }
-                    }}
-                    target={user && resource.externalUrl ? '_blank' : '_self'}
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
-                  >
-                    <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                    Watch Video
-                  </a>
-                )}
-
-                {/* Google Drive Action */}
-                {(resource.resourceType === 'Google Drive' || resource.type === 'Google Drive') && (
-                  <a
-                    href={user && resource.externalUrl ? resource.externalUrl : '#'}
-                    onClick={(e) => {
-                      if (!user) {
-                        e.preventDefault();
-                        setShowSignInModal(true);
-                      }
-                    }}
-                    target={user && resource.externalUrl ? '_blank' : '_self'}
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
-                  >
-                    <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-                    Open Google Drive
-                  </a>
-                )}
-
-                {/* Useful Link Action */}
-                {(resource.resourceType === 'Useful Link' || resource.type === 'Useful Link') && (
-                  <a
-                    href={user && resource.externalUrl ? resource.externalUrl : '#'}
-                    onClick={(e) => {
-                      if (!user) {
-                        e.preventDefault();
-                        setShowSignInModal(true);
-                      }
-                    }}
-                    target={user && resource.externalUrl ? '_blank' : '_self'}
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-obsidian-950 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20"
-                  >
-                    <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-                    Open Link
-                  </a>
                 )}
               </div>
             </div>
           </div>
         )}
       </main>
+
+      {/* Buy Now Modal */}
+      <BuyNowModal
+        isOpen={showBuyModal}
+        onClose={() => setShowBuyModal(false)}
+        resource={resource}
+        user={user}
+        onSuccess={() => {
+          setResource((prev) => ({
+            ...prev,
+            hasPendingPurchase: true,
+          }));
+        }}
+      />
 
       {/* Sign in required Modal */}
       {showSignInModal && (

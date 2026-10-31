@@ -13,6 +13,8 @@ const subjectRoutes = require('./routes/subjectRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const purchaseRoutes = require('./routes/purchaseRoutes');
 
 const { verifySmtpConnection } = require('./config/mailer');
 
@@ -66,11 +68,57 @@ app.use('/uploads', async (req, res, next) => {
   try {
     const fileUrl = `/uploads${req.path}`;
     const Resource = require('./models/Resource');
+    const Purchase = require('./models/Purchase');
     const { hasResourceAccess } = require('./controllers/resourceController');
+    const { verifyToken } = require('./utils/jwt');
 
-    const resource = await Resource.findOne({ fileUrl, passwordProtected: true });
+    const resource = await Resource.findOne({
+      fileUrl,
+      $or: [{ passwordProtected: true }, { isPremium: true }],
+    });
+
     if (resource) {
-      if (!hasResourceAccess(req, resource._id.toString())) {
+      let isAdmin = false;
+      const adminToken = req.cookies?.adminToken || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
+      if (adminToken) {
+        try {
+          const decoded = verifyToken(adminToken);
+          if (decoded && decoded.role === 'admin') isAdmin = true;
+        } catch (_) {}
+      }
+
+      if (resource.isPremium && !isAdmin) {
+        let authUserId = null;
+        const userToken = req.cookies?.userToken || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
+        if (userToken) {
+          try {
+            const decoded = verifyToken(userToken);
+            if (decoded && decoded.id) authUserId = decoded.id;
+          } catch (_) {}
+        }
+
+        if (!authUserId) {
+          return res.status(401).json({
+            status: 'error',
+            message: 'Access denied. Sign in required to access this premium resource.',
+          });
+        }
+
+        const approvedPurchase = await Purchase.findOne({
+          user: authUserId,
+          resource: resource._id,
+          status: 'approved',
+        });
+
+        if (!approvedPurchase) {
+          return res.status(403).json({
+            status: 'error',
+            message: 'Access denied. You must purchase this premium resource to access this file.',
+          });
+        }
+      }
+
+      if (resource.passwordProtected && !hasResourceAccess(req, resource._id.toString())) {
         return res.status(403).json({
           status: 'error',
           message: 'Access denied. Password verification required to access this file.',
@@ -106,6 +154,8 @@ app.use('/api/v1/subjects', subjectRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/payment', paymentRoutes);
+app.use('/api/v1/purchases', purchaseRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
@@ -115,7 +165,14 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  const statusCode = err.status || err.statusCode || 500;
+  let statusCode = err.status || err.statusCode;
+  if (!statusCode) {
+    if (err.name === 'MulterError' || (err.message && err.message.includes('not supported'))) {
+      statusCode = 400;
+    } else {
+      statusCode = 500;
+    }
+  }
   console.error('[Global Error Handler]:', err.message || err);
   res.status(statusCode).json({
     status: 'error',

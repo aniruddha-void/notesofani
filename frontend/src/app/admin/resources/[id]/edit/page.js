@@ -29,6 +29,8 @@ export default function EditResourcePage({ params }) {
     embedVideoUrl: '',
     passwordProtected: false,
     password: '',
+    isPremium: false,
+    price: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [wasOriginallyProtected, setWasOriginallyProtected] = useState(false);
@@ -62,6 +64,8 @@ export default function EditResourcePage({ params }) {
             embedVideoUrl: r.embedVideoUrl || r.externalUrl || '',
             passwordProtected: isProt,
             password: '',
+            isPremium: Boolean(r.isPremium),
+            price: r.price ? String(r.price) : '',
           });
           setExistingFileUrl(r.fileUrl || '');
         }
@@ -110,6 +114,18 @@ export default function EditResourcePage({ params }) {
       return;
     }
 
+    if (formData.isPremium) {
+      const numPrice = parseFloat(formData.price);
+      if (!numPrice || numPrice <= 0 || isNaN(numPrice)) {
+        setToast({
+          visible: true,
+          message: 'Please enter a valid price in INR (greater than 0) for this premium resource.',
+          type: 'error',
+        });
+        return;
+      }
+    }
+
     try {
       setSubmitting(true);
       const data = new FormData();
@@ -122,6 +138,8 @@ export default function EditResourcePage({ params }) {
       if (formData.passwordProtected && formData.password) {
         data.append('password', formData.password.trim());
       }
+      data.append('isPremium', formData.isPremium);
+      data.append('price', formData.isPremium ? formData.price : 0);
       if (formData.externalUrl) data.append('externalUrl', formData.externalUrl);
       if (formData.embedVideoUrl) data.append('embedVideoUrl', formData.embedVideoUrl);
       if (file) data.append('file', file);
@@ -302,6 +320,55 @@ export default function EditResourcePage({ params }) {
                 )}
               </div>
 
+              {/* Premium Resource Selling Toggle */}
+              <div className="bg-obsidian-950/60 border border-white/10 rounded-xl p-4 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="isPremium"
+                      checked={formData.isPremium}
+                      onChange={(e) => setFormData({ ...formData, isPremium: e.target.checked })}
+                      className="w-4 h-4 rounded border-white/20 bg-obsidian-900 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                    />
+                    <label htmlFor="isPremium" className="text-sm font-semibold text-white cursor-pointer select-none flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px] text-amber-400">workspace_premium</span>
+                      Sell this resource as a Premium Resource
+                    </label>
+                  </div>
+                  {formData.isPremium && (
+                    <span className="text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                      Manual UPI Payment
+                    </span>
+                  )}
+                </div>
+
+                {formData.isPremium && (
+                  <div className="pt-2 border-t border-white/[0.04] space-y-2">
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      Price in Indian Rupees (INR ₹) <span className="text-rose-400">*</span>
+                    </label>
+                    <div className="relative max-w-xs">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                        ₹
+                      </span>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        required={formData.isPremium}
+                        value={formData.price}
+                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                        placeholder="e.g. 99"
+                        className="w-full bg-obsidian-900 border border-white/10 rounded-xl pl-8 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400">
+                      Users will scan your configured PhonePe/UPI QR code and submit their 12-digit transaction UTR number to purchase this resource.
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {isFileBased && (
                 <div>

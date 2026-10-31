@@ -3,6 +3,7 @@ const Subject = require('../models/Subject');
 const User = require('../models/User');
 const Download = require('../models/Download');
 const Favorite = require('../models/Favorite');
+const Purchase = require('../models/Purchase');
 const UserResourceActivity = require('../models/UserResourceActivity');
 const { OFFICIAL_RESOURCE_TYPES } = require('../models/Resource');
 
@@ -15,6 +16,10 @@ const getStats = async (req, res) => {
       totalSubjects,
       totalDownloadsCount,
       distributionResult,
+      totalPurchases,
+      pendingPurchases,
+      approvedPurchases,
+      revenueResult,
     ] = await Promise.all([
       Resource.countDocuments(),
       Resource.countDocuments({ $or: [{ published: true }, { status: 'Published' }] }),
@@ -29,9 +34,17 @@ const getStats = async (req, res) => {
           },
         },
       ]),
+      Purchase.countDocuments(),
+      Purchase.countDocuments({ status: 'pending' }),
+      Purchase.countDocuments({ status: 'approved' }),
+      Purchase.aggregate([
+        { $match: { status: 'approved' } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
     ]);
 
     const draftResources = totalResources >= publishedResources ? totalResources - publishedResources : 0;
+    const totalRevenue = revenueResult[0]?.total || 0;
 
     const resourceDistribution = {};
     OFFICIAL_RESOURCE_TYPES.forEach((t) => {
@@ -55,6 +68,10 @@ const getStats = async (req, res) => {
           totalUsers,
           totalSubjects,
           resourceDistribution,
+          totalPurchases,
+          pendingPurchases,
+          approvedPurchases,
+          totalRevenue,
         },
       },
     });

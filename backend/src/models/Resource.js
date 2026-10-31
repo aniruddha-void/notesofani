@@ -82,6 +82,16 @@ const resourceSchema = new mongoose.Schema(
       default: null,
       select: false,
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: [0, 'Resource price cannot be negative'],
+    },
   },
   {
     timestamps: true,

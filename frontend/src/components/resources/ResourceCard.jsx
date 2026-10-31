@@ -15,7 +15,26 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
       <div>
         
         <div className="flex items-center justify-between gap-2 sm:gap-3 mb-4 flex-wrap">
-          <ResourceTypeBadge type={resource.type} />
+          <div className="flex items-center gap-2">
+            <ResourceTypeBadge type={resource.type} />
+            {resource.isPremium && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25 shadow-sm">
+                <span className="material-symbols-outlined text-[13px]">workspace_premium</span>
+                ₹{resource.price}
+              </span>
+            )}
+            {resource.isPurchased && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="material-symbols-outlined text-[12px]">verified</span>
+                Unlocked
+              </span>
+            )}
+            {resource.hasPendingPurchase && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                Pending
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2 shrink-0">
             {onToggleFavorite && (
               <button
@@ -54,23 +73,47 @@ export default function ResourceCard({ resource, isFavorited = false, onToggleFa
       </div>
 
      
-      <div className="pt-4 border-t border-white/[0.04] flex items-center justify-end text-xs text-slate-400">
-        <div className="flex items-center gap-2">
-          {resource.type === 'PDF' && (
-            <Link
-              href={`/resources/${resource._id}/view`}
-              className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium transition-colors flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-[14px]">visibility</span>
-              View
-            </Link>
+      <div className="pt-4 border-t border-white/[0.04] flex items-center justify-between text-xs text-slate-400">
+        <div>
+          {resource.isPremium && !resource.isPurchased ? (
+            <span className="text-xs font-bold text-amber-400">
+              ₹{resource.price} <span className="text-[10px] font-normal text-slate-400">INR</span>
+            </span>
+          ) : (
+            <span className="text-[11px] text-slate-400">
+              {resource.isPurchased ? 'Purchased' : 'Free Resource'}
+            </span>
           )}
-          <Link
-            href={`/resources/${resource._id}`}
-            className="px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 text-xs font-medium transition-colors flex items-center gap-1"
-          >
-            Details
-          </Link>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {resource.isPremium && !resource.isPurchased && !resource.hasPendingPurchase ? (
+            <Link
+              href={`/resources/${resource._id}`}
+              className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-obsidian-950 text-xs font-bold transition-all flex items-center gap-1 shadow-sm shadow-amber-500/20"
+            >
+              <span className="material-symbols-outlined text-[15px]">shopping_cart</span>
+              Buy Now
+            </Link>
+          ) : (
+            <>
+              {resource.type === 'PDF' && resource.isUnlocked && (
+                <Link
+                  href={`/resources/${resource._id}/view`}
+                  className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium transition-colors flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-[14px]">visibility</span>
+                  View
+                </Link>
+              )}
+              <Link
+                href={`/resources/${resource._id}`}
+                className="px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 text-xs font-medium transition-colors flex items-center gap-1"
+              >
+                Details
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

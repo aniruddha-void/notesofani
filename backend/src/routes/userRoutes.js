@@ -23,6 +23,9 @@ router.delete('/favorites/:resourceId', removeFavorite);
 
 router.get('/downloads', getDownloadHistory);
 
+const { getUserPurchases } = require('../controllers/purchaseController');
+router.get('/purchases', getUserPurchases);
+
 router.get('/profile', getProfile);
 router.put('/profile', updateProfile);
 

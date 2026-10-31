@@ -228,6 +228,32 @@ export default function PdfViewerPage({ params }) {
               </Link>
             </div>
           </div>
+        ) : resource && resource.isPremium && !resource.isPurchased ? (
+          /* Premium Resource Locked Card */
+          <div className="w-full max-w-md p-8 bg-obsidian-900/90 border border-amber-500/20 rounded-2xl flex flex-col items-center text-center space-y-4 shadow-2xl backdrop-blur-xl">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <span className="material-symbols-outlined text-[28px]">workspace_premium</span>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold text-white tracking-tight">Premium Resource</h3>
+              <p className="text-sm text-slate-400">
+                {resource.hasPendingPurchase
+                  ? 'Your payment request is pending manual verification. Access will be unlocked once approved.'
+                  : `This document is a premium resource (₹${resource.price} INR). Please complete purchase to view and download.`}
+              </p>
+            </div>
+            <div className="w-full pt-2">
+              <Link
+                href={`/resources/${id}`}
+                className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {resource.hasPendingPurchase ? 'schedule' : 'shopping_cart'}
+                </span>
+                {resource.hasPendingPurchase ? 'Check Status' : `Buy Now (₹${resource.price})`}
+              </Link>
+            </div>
+          </div>
         ) : error || pdfError ? (
           <ErrorState
             title="PDF Document Unavailable"

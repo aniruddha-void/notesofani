@@ -25,6 +25,8 @@ export default function AdminSidebar() {
   const navLinks = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
     { href: '/admin/resources', label: 'Manage Resources', icon: 'folder_open' },
+    { href: '/admin/purchases', label: 'Purchase Requests', icon: 'receipt_long' },
+    { href: '/admin/payment-settings', label: 'Payment Settings', icon: 'qr_code_2' },
     { href: '/admin/subjects', label: 'Manage Subjects', icon: 'menu_book' },
     { href: '/admin/users', label: 'Manage Users', icon: 'group' },
     { href: '/admin/contact-messages', label: 'Contact Messages', icon: 'mail' },

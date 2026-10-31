@@ -15,7 +15,10 @@ const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error(`File type '${file.mimetype}' is not supported`), false);
+    const error = new Error(`File type '${file.mimetype}' is not supported`);
+    error.status = 400;
+    error.statusCode = 400;
+    cb(error, false);
   }
 };
 
